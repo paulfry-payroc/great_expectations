@@ -1,0 +1,18 @@
+# config_version refers to the syntactic version of this config file, and is used in maintaining backwards compatibility
+# It is auto-generated and usually does not need to be changed.
+config_version: 3
+
+datasources:
+  my_snowflake_store: # This is the name of the datasource
+    module_name: great_expectations.datasource
+    class_name: SimpleSqlalchemyDatasource
+    credentials:
+      drivername: snowflake
+      host: {{ SNOWFLAKE_HOST }}
+      username: {{ SNOWFLAKE_USER }}
+      password: {{ SNOWFLAKE_PASSWORD }}
+      database: {{ SNOWFLAKE_DATABASE }}
+      schema: {{ SNOWFLAKE_SCHEMA }}
+    introspection:
+      whole_table:
+        valid_keys: []

@@ -1,0 +1,7 @@
+great_expectations==0.17.19
+j2cli==0.3.10
+snowflake-connector-python==3.0.4
+sqlalchemy==1.4.48
+snowflake-sqlalchemy
+black==23.9.1
+python-dotenv

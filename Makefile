@@ -15,31 +15,46 @@ SHELL = /bin/sh
 
 # load variables from separate file
 include config.mk
+
+# Load environment variables from .env file
+# include .env
+
+VENV_ACTIVATE := . ./.venv/bin/activate
+GX_PROJECT_DIR := gx
 #=======================================================================
 # Targets
 #=======================================================================
-all: deps install clean
+all: deps install test
 
 deps:
 	@echo "----------------------------------------------------------------------------------------------------------------------"
 	@echo "${YELLOW}Target: 'deps'. Download the relevant pip package dependencies.${COLOUR_OFF}"
 	@echo "----------------------------------------------------------------------------------------------------------------------"
-	@echo "deps called"
+	@echo "${PURPLE}Step 1: Create a virtualenv (.venv) with the required Python libraries (see requirements.txt)${COLOUR_OFF}"
+	@python3 -m venv .venv && chmod +x ./.venv/bin/activate
+	@${VENV_ACTIVATE} && pip install -r requirements.txt -q
+	@echo "${PURPLE}Step 2: Generate .env file${COLOUR_OFF}"
+	@j2 src/templates/jinja_templates/.env.j2 -o .env
 
 install:
-	@echo "------------------------------------------------------------------"
 	@echo "${YELLOW}Target: 'install'. Run the setup and install targets.${COLOUR_OFF}"
-	@echo "------------------------------------------------------------------"
+	@echo "${PURPLE}Step 1: Create Great Expectations Project Dir${COLOUR_OFF}"
+	@${VENV_ACTIVATE} && great_expectations init
+	@echo "${PURPLE}Step 3: Copy python scripts over${COLOUR_OFF}"
+	@cp src/templates/py/uncommitted/test_snowflake_connection.py ${GX_PROJECT_DIR}/uncommitted/test_snowflake_connection.py
 
 test:
-	@echo "------------------------------------------------------------------"
 	@echo "${YELLOW}Target 'test'. Perform any required tests.${COLOUR_OFF}"
-	@echo "------------------------------------------------------------------"
+	@${VENV_ACTIVATE} && python3 gx/uncommitted/test_snowflake_connection.py
+
+profile_data:
+	@${VENV_ACTIVATE} && python3 gx/uncommitted/profile_snowflake_database.py
 
 clean:
-	@echo "------------------------------------------------------------------"
 	@echo "${YELLOW}Target 'clean'. Remove any redundant files, e.g. downloads.${COLOUR_OFF}"
-	@echo "------------------------------------------------------------------"
+	@echo "${PURPLE}Delete the virtualenv directory & delete the generated .env file${COLOUR_OFF}"
+	@rm -rf .venv && rm -f .env
+	@rm -rf gx
 
 # Phony targets
 .PHONY: all deps install test clean
