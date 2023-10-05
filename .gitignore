@@ -1,5 +1,6 @@
 # g8-specific
 great_expectations.yml
+gx/great_expectations/.great_expectations
 
 # Common credential files
 *.p8

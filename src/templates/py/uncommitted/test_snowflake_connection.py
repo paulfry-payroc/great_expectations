@@ -2,7 +2,7 @@ import os
 
 import great_expectations as gx
 from dotenv import load_dotenv
-from ruamel import yaml
+from ruamel import yaml  # noqa
 
 # Load environment variables from .env file
 load_dotenv()
@@ -21,7 +21,7 @@ context = gx.get_context()
 
 
 datasource_yaml = f"""
-name: my_snowflake_datasource
+name: test_ds_conn
 class_name: Datasource
 execution_engine:
   class_name: SqlAlchemyExecutionEngine
@@ -52,8 +52,9 @@ data_connectors:
         class_name: Asset
         schema_name: {SNOWFLAKE_SCHEMA}
 """
+print(datasource_yaml)
 
 # test the connection
-context.test_yaml_config(datasource_yaml)
+context.test_yaml_config(yaml_config=datasource_yaml)
 
-context.add_datasource(**yaml.load(datasource_yaml))
+# context.add_datasource(**yaml.load(datasource_yaml))
