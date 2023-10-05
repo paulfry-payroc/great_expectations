@@ -1,22 +1,40 @@
-import pandas as pd
-import snowflake.connector
-from great_expectations.data_context.store import HtmlSiteStore
+import os
 from great_expectations.dataset.pandas_dataset import PandasDataset
 from great_expectations.profile.basic_dataset_profiler import BasicDatasetProfiler
-from great_expectations.render.renderer import ExpectationSuitePageRenderer
-from great_expectations.render.renderer import ProfilingResultsPageRenderer
-from great_expectations.render.view import DefaultJinjaPageView
 
 # import the renderer who will basically create the document content
+from great_expectations.render.renderer import ProfilingResultsPageRenderer, ExpectationSuitePageRenderer
+
 # import the view template who will basically convert the document content to HTML
+from great_expectations.render.view import DefaultJinjaPageView
+
+from great_expectations.data_context.store import HtmlSiteStore
+
+import snowflake.connector
+import pandas as pd
+
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Snowflake connection parameters
+SNOWFLAKE_ACCOUNT = os.getenv("SNOWFLAKE_ACCOUNT")
+SNOWFLAKE_USER = os.getenv("SNOWFLAKE_USER")
+SNOWFLAKE_PASSWORD = os.getenv("SNOWFLAKE_PASSWORD")
+SNOWFLAKE_DATABASE = os.getenv("SNOWFLAKE_DATABASE")
+SNOWFLAKE_SCHEMA = os.getenv("SNOWFLAKE_SCHEMA")
+SNOWFLAKE_WAREHOUSE = os.getenv("SNOWFLAKE_WAREHOUSE")
+SNOWFLAKE_ROLE = os.getenv("SNOWFLAKE_ROLE")
+SNOWFLAKE_EXAMPLE_TBL = os.getenv("SNOWFLAKE_EXAMPLE_TBL")
 
 snowflake_params = {
-    "account": "sp65314.us-east-2.aws",
-    "user": "paul_fry",
-    "password": "Carpet11!",
-    "warehouse": "DEV_WH",
-    "database": "DTE_PFRY",
-    "schema": "DWH_WAREHOUSE",
+    "account": {SNOWFLAKE_ACCOUNT},
+    "user": {SNOWFLAKE_USER},
+    "password": {SNOWFLAKE_PASSWORD},
+    "warehouse": {SNOWFLAKE_WAREHOUSE},
+    "database": {SNOWFLAKE_DATABASE},
+    "schema": {SNOWFLAKE_SCHEMA},
 }
 
 conn = snowflake.connector.connect(
@@ -42,9 +60,7 @@ pandas_dataset = PandasDataset(df)
 
 # profiling the data
 # we will be using BasicDatasetProfiler as a profiler
-expectation_suite_based_on_profiling, validation_result_based_on_profiling = pandas_dataset.profile(
-    BasicDatasetProfiler
-)
+expectation_suite_based_on_profiling, validation_result_based_on_profiling = pandas_dataset.profile(BasicDatasetProfiler)
 
 expectation_suite_based_on_profiling
 
@@ -54,9 +70,7 @@ expectation_suite_based_on_profiling
 
 profiling_result_document_content = ProfilingResultsPageRenderer().render(validation_result_based_on_profiling)
 # it is of type great_expectations.render.types.RenderedDocumentContent
-expectation_based_on_profiling_document_content = ExpectationSuitePageRenderer().render(
-    expectation_suite_based_on_profiling
-)
+expectation_based_on_profiling_document_content = ExpectationSuitePageRenderer().render(expectation_suite_based_on_profiling)
 # it is also of type great_expectations.render.types.RenderedDocumentContent
 
 # we will generate the HTML
