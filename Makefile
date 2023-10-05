@@ -17,10 +17,12 @@ SHELL = /bin/sh
 include config.mk
 
 # Load environment variables from .env file
-# include .env
+include .env
 
 VENV_ACTIVATE := . ./.venv/bin/activate
 GX_PROJECT_DIR := gx
+GX_DATA_SRC := my_datasource
+
 #=======================================================================
 # Targets
 #=======================================================================
@@ -40,6 +42,8 @@ install:
 	@echo "${YELLOW}Target: 'install'. Run the setup and install targets.${COLOUR_OFF}"
 	@echo "${PURPLE}Step 1: Create Great Expectations Project Dir${COLOUR_OFF}"
 	@${VENV_ACTIVATE} && great_expectations init
+	@echo "${PURPLE}Step 2: Render GX template files${COLOUR_OFF}"
+	@j2 src/templates/jinja_templates/great_expectations.yml.j2 -o ${GX_PROJECT_DIR}/great_expectations.yml
 	@echo "${PURPLE}Step 3: Copy python scripts over${COLOUR_OFF}"
 	@cp src/templates/py/uncommitted/test_snowflake_connection.py ${GX_PROJECT_DIR}/uncommitted/test_snowflake_connection.py
 
@@ -47,8 +51,12 @@ test:
 	@echo "${YELLOW}Target 'test'. Perform any required tests.${COLOUR_OFF}"
 	@${VENV_ACTIVATE} && python3 gx/uncommitted/test_snowflake_connection.py
 
-profile_data:
-	@${VENV_ACTIVATE} && python3 gx/uncommitted/profile_snowflake_database.py
+one:
+	@${VENV_ACTIVATE} && python3 gx/uncommitted/create_expectation_suite.py
+
+two:
+	@${VENV_ACTIVATE} && python3 gx/uncommitted/profile_data.py
+
 
 clean:
 	@echo "${YELLOW}Target 'clean'. Remove any redundant files, e.g. downloads.${COLOUR_OFF}"
