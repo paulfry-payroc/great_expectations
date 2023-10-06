@@ -52,9 +52,7 @@ data_connectors:
         class_name: Asset
         schema_name: {SNOWFLAKE_SCHEMA}
 """
-print(datasource_yaml)
+# print(datasource_yaml)
 
 # test the connection
 context.test_yaml_config(yaml_config=datasource_yaml)
-
-# context.add_datasource(**yaml.load(datasource_yaml))

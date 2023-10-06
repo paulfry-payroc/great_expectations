@@ -4,4 +4,4 @@ snowflake-connector-python==3.0.4
 sqlalchemy==1.4.48
 snowflake-sqlalchemy
 black==23.9.1
-python-dotenv
+python-dotenv==1.0.0

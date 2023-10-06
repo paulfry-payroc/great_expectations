@@ -21,34 +21,30 @@ include .env
 
 VENV_ACTIVATE := . ./.venv/bin/activate
 GX_PROJECT_DIR := gx
-GX_DATA_SRC := my_datasource
+GX_DATA_SRC := gx_datasource_snowflake
 
 #=======================================================================
 # Targets
 #=======================================================================
-all: deps install test
+all: clean deps install test
 
 deps:
-	@echo "----------------------------------------------------------------------------------------------------------------------"
-	@echo "${YELLOW}Target: 'deps'. Download the relevant pip package dependencies.${COLOUR_OFF}"
-	@echo "----------------------------------------------------------------------------------------------------------------------"
-	@echo "${PURPLE}Step 1: Create a virtualenv (.venv) with the required Python libraries (see requirements.txt)${COLOUR_OFF}"
+	@echo && echo "${YELLOW}Called makefile target: 'deps'. Generate VENV with required pip packages.${COLOUR_OFF}" && echo
+	@echo "${PURPLE}Step 1: Create a virtualenv (.venv) with the required Python libraries - see requirements.txt.${COLOUR_OFF}"
 	@python3 -m venv .venv && chmod +x ./.venv/bin/activate
 	@${VENV_ACTIVATE} && pip install -r requirements.txt -q
-	@echo "${PURPLE}Step 2: Generate .env file${COLOUR_OFF}"
-	@j2 src/templates/jinja_templates/.env.j2 -o .env
 
 install:
-	@echo "${YELLOW}Target: 'install'. Run the setup and install targets.${COLOUR_OFF}"
-	@echo "${PURPLE}Step 1: Create Great Expectations Project Dir${COLOUR_OFF}"
-	@${VENV_ACTIVATE} && great_expectations init
-	@echo "${PURPLE}Step 2: Render GX template files${COLOUR_OFF}"
+	@echo && echo "${YELLOW}Called makefile target: 'install'. Run the setup and install targets.${COLOUR_OFF}" && echo
+	@echo "${PURPLE}Step 1: Create Great Expectations Project directory.${COLOUR_OFF}"
+	@${VENV_ACTIVATE} && echo "Y" | great_expectations init --no-usage-stats > /dev/null 2>&1
+	@echo "${PURPLE}Step 2: Render GX jinja template files.${COLOUR_OFF}"
 	@j2 src/templates/jinja_templates/great_expectations.yml.j2 -o ${GX_PROJECT_DIR}/great_expectations.yml
-	@echo "${PURPLE}Step 3: Copy python scripts over${COLOUR_OFF}"
+	@echo "${PURPLE}Step 3: Copy over GX python scripts.${COLOUR_OFF}"
 	@cp src/templates/py/uncommitted/test_snowflake_connection.py ${GX_PROJECT_DIR}/uncommitted/test_snowflake_connection.py
 
 test:
-	@echo "${YELLOW}Target 'test'. Perform any required tests.${COLOUR_OFF}"
+	@echo && echo "${YELLOW}Called makefile target 'test'. Test the GX data source connection.${COLOUR_OFF}" && echo
 	@${VENV_ACTIVATE} && python3 gx/uncommitted/test_snowflake_connection.py
 
 one:
@@ -57,11 +53,11 @@ one:
 two:
 	@${VENV_ACTIVATE} && python3 gx/uncommitted/profile_data.py
 
-
 clean:
-	@echo "${YELLOW}Target 'clean'. Remove any redundant files, e.g. downloads.${COLOUR_OFF}"
-	@echo "${PURPLE}Delete the virtualenv directory & delete the generated .env file${COLOUR_OFF}"
-	@rm -rf .venv && rm -f .env
+	@echo && echo "${YELLOW}Called makefile target 'clean'. Purpose: restore the repo to it's initial state (i.e., remove all generated/created files).${COLOUR_OFF}" && echo
+	@echo "${PURPLE}* Delete the virtualenv directory & delete the generated .env file${COLOUR_OFF}"
+	@rm -rf .venv
+	@echo "${PURPLE}* Delete the generated GX (greate expectations) directory${COLOUR_OFF}"
 	@rm -rf gx
 
 # Phony targets
