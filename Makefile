@@ -45,9 +45,10 @@ test:
 	@echo && echo "${YELLOW}Called makefile target 'test'. Test the GX data source connection.${COLOUR_OFF}" && echo
 	@${VENV_ACTIVATE} && python3 src/py/test_snowflake_connection.py
 
-one:
+create_expectation_suite:
 	@${VENV_ACTIVATE} && python3 src/py/create_expectation_suite.py
 
+# wip
 two:
 	@${VENV_ACTIVATE} && python3 src/py/profile_data.py
 
