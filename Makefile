@@ -40,18 +40,16 @@ install:
 	@${VENV_ACTIVATE} && echo "Y" | great_expectations init --no-usage-stats > /dev/null 2>&1
 	@echo "${PURPLE}Step 2: Render GX jinja template files.${COLOUR_OFF}"
 	@j2 src/templates/jinja_templates/great_expectations.yml.j2 -o ${GX_PROJECT_DIR}/great_expectations.yml
-	@echo "${PURPLE}Step 3: Copy over GX python scripts.${COLOUR_OFF}"
-	@cp src/templates/py/uncommitted/test_snowflake_connection.py ${GX_PROJECT_DIR}/uncommitted/test_snowflake_connection.py
 
 test:
 	@echo && echo "${YELLOW}Called makefile target 'test'. Test the GX data source connection.${COLOUR_OFF}" && echo
-	@${VENV_ACTIVATE} && python3 gx/uncommitted/test_snowflake_connection.py
+	@${VENV_ACTIVATE} && python3 src/py/test_snowflake_connection.py
 
 one:
-	@${VENV_ACTIVATE} && python3 gx/uncommitted/create_expectation_suite.py
+	@${VENV_ACTIVATE} && python3 src/py/create_expectation_suite.py
 
 two:
-	@${VENV_ACTIVATE} && python3 gx/uncommitted/profile_data.py
+	@${VENV_ACTIVATE} && python3 src/py/profile_data.py
 
 clean:
 	@echo && echo "${YELLOW}Called makefile target 'clean'. Purpose: restore the repo to it's initial state (i.e., remove all generated/created files).${COLOUR_OFF}" && echo
