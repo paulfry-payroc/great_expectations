@@ -45,12 +45,9 @@ test:
 	@echo && echo "${YELLOW}Called makefile target 'test'. Test the GX data source connection.${COLOUR_OFF}" && echo
 	@${VENV_ACTIVATE} && python3 src/py/test_snowflake_connection.py
 
-create_expectation_suite:
+create_data_profile:
+	@${VENV_ACTIVATE} && python3 src/py/gx_snowflake_data_profiler.py
 	@${VENV_ACTIVATE} && python3 src/py/create_expectation_suite.py
-
-# wip
-two:
-	@${VENV_ACTIVATE} && python3 src/py/profile_data.py
 
 clean:
 	@echo && echo "${YELLOW}Called makefile target 'clean'. Purpose: restore the repo to it's initial state (i.e., remove all generated/created files).${COLOUR_OFF}" && echo
@@ -58,6 +55,12 @@ clean:
 	@rm -rf .venv
 	@echo "${PURPLE}* Delete the generated GX (greate expectations) directory${COLOUR_OFF}"
 	@rm -rf gx
+
+clean_gx:
+	@rm -rf gx/uncommitted/validations/*
+	@rm -rf gx/checkpoints/*
+	@rm -rf gx/expectations/*
+	@rm -rf gx/uncommitted/data_docs/local_site/*
 
 # Phony targets
 .PHONY: all deps install test clean

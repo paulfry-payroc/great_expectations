@@ -6,7 +6,6 @@ import snowflake.connector
 from dotenv import load_dotenv
 from great_expectations.dataset.pandas_dataset import PandasDataset
 from great_expectations.profile.basic_dataset_profiler import BasicDatasetProfiler
-from great_expectations.render.renderer import ExpectationSuitePageRenderer
 from great_expectations.render.renderer import ProfilingResultsPageRenderer
 from great_expectations.render.view import DefaultJinjaPageView
 
@@ -47,19 +46,13 @@ def create_directory(directory):
 
 
 def generate_data_profiling_html(pandas_dataset):
-    # we will be using BasicDatasetProfiler as a profiler
-    expectation_suite_based_on_profiling, validation_result_based_on_profiling = pandas_dataset.profile(
-        BasicDatasetProfiler
+    # Using BasicDatasetProfiler as a profiler
+    profiling_result_document_content = ProfilingResultsPageRenderer().render(
+        pandas_dataset.profile(BasicDatasetProfiler)
     )
 
-    profiling_result_document_content = ProfilingResultsPageRenderer().render(validation_result_based_on_profiling)
-    expectation_based_on_profiling_document_content = ExpectationSuitePageRenderer().render(
-        expectation_suite_based_on_profiling
-    )
-
-    # we will generate the HTML
+    # Generate the HTML
     profiling_result_HTML = DefaultJinjaPageView().render(profiling_result_document_content)
-    expectation_based_on_profiling_HTML = DefaultJinjaPageView().render(expectation_based_on_profiling_document_content)
 
     # create the directory below if it doesn't exist
     create_directory(DATA_DOCS_DIR)
@@ -67,9 +60,6 @@ def generate_data_profiling_html(pandas_dataset):
     # Write the raw HTML content to files
     with open(f"{DATA_DOCS_DIR}/profiling_results.html", "w") as profiling_results_file:
         profiling_results_file.write(profiling_result_HTML)
-
-    with open(f"{DATA_DOCS_DIR}/expectation_suite.html", "w") as expectation_suite_file:
-        expectation_suite_file.write(expectation_based_on_profiling_HTML)
 
     return
 
