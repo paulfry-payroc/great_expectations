@@ -1,0 +1,31 @@
+---
+name: my_checkpoint
+config_version: 1.0
+template_name:
+module_name: great_expectations.checkpoint
+class_name: Checkpoint
+run_name_template:
+expectation_suite_name:
+batch_request: {}
+action_list:
+    - name: store_validation_result
+      action:
+          class_name: StoreValidationResultAction
+    - name: store_evaluation_params
+      action:
+          class_name: StoreEvaluationParametersAction
+    - name: update_data_docs
+      action:
+          class_name: UpdateDataDocsAction
+evaluation_parameters: {}
+runtime_configuration: {}
+validations:
+    - batch_request:
+          datasource_name: gx_datasource_snowflake
+          data_connector_name: default_configured_data_connector_name
+          data_asset_name: BKP_CHANGE_HISTORY
+          limit: 30
+      expectation_suite_name: data_profiling_suite_2023_10_06
+profilers: []
+ge_cloud_id:
+expectation_suite_ge_cloud_id:

@@ -20,29 +20,76 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 context = gx.get_context()
 
 
-def prepare_batch_request(env_vars):
-    """Prepare a batch request for the given data asset name."""
-    batch_request = {
-        "datasource_name": env_vars["GX_DATA_SRC"],
-        "data_connector_name": "default_configured_data_connector_name",
-        "data_asset_name": env_vars["INPUT_TABLE"],
-        "limit": int(env_vars["ROW_COUNT_LIMIT"]),
-    }
-    return batch_request
+def last_bit(checkpoint_result):
+    validation_result_identifier = checkpoint_result.list_validation_result_identifiers()[0]
+    context.open_data_docs(resource_identifier=validation_result_identifier)
 
 
-def prepare_expectation_suite():
-    """Prepare and create a new expectation suite with the current date as the name."""
-    current_date_str = datetime.now().strftime("%Y_%m_%d")
-    expectation_suite_name = f"data_profiling_suite_{current_date_str}"
+def modify_html_file(file_path):
+    """Modifies the specified HTML file content, replacing the specified text."""
+    with open(file_path) as file:
+        content = file.read()
 
+    # Specify the text to be replaced and its replacement
+    old_text = (
+        '<li class="nav-item">\n'
+        '    <a class="nav-link" id="Expectation-Suites-tab" data-toggle="tab" href="#Expectation-Suites"\n'
+        '      role="tab" aria-selected="false" aria-controls="Expectation-Suites">\n'
+        "      Expectation Suites\n"
+        "    </a>\n"
+        "  </li>"
+    )
+
+    new_text = (
+        '<li class="nav-item">\n'
+        '    <a class="nav-link" id="Expectation-Suites-tab" href="profiling_results.html"\n'
+        '      aria-selected="false" aria-controls="Expectation-Suites">\n'
+        "      Profiling Results\n"
+        "    </a>\n"
+        "  </li>\n"
+        "\n"
+        '  <li class="nav-item">\n'
+        '    <a class="nav-link" id="Expectation-Suites-tab" data-toggle="tab" href="#Expectation-Suites"\n'
+        '      role="tab" aria-selected="false" aria-controls="Expectation-Suites">\n'
+        "      Expectation Suites\n"
+        "    </a>\n"
+        "  </li>"
+    )
+
+    # Replace old_text with new_text in the content
+    modified_content = content.replace(old_text, new_text)
+
+    # Write the modified content back to the file
+    with open(file_path, "w") as file:
+        file.write(modified_content)
+
+
+def create_and_run_checkpoint(batch_request, expectation_suite_name):
+    """Create a checkpoint, run validations, and build data documentation."""
+    checkpoint = context.add_or_update_checkpoint(
+        name="my_checkpoint",
+        validations=[
+            {
+                "batch_request": batch_request,
+                "expectation_suite_name": expectation_suite_name,
+            },
+        ],
+    )
+    checkpoint_result = checkpoint.run()
+    context.build_data_docs()
+
+    return checkpoint_result
+
+
+def save_expectation_suite(data_assistant_result, expectation_suite_name):
+    """Save the expectation suite obtained from the data assistant."""
     try:
-        context.create_expectation_suite(expectation_suite_name, overwrite_existing=True)
-        logging.info(f"Expectation suite '{expectation_suite_name}' created successfully.")
+        expectation_suite = data_assistant_result.get_expectation_suite(expectation_suite_name=expectation_suite_name)
+        context.add_or_update_expectation_suite(expectation_suite=expectation_suite)
+        logging.info(f"Expectation suite '{expectation_suite_name}' saved successfully.")
     except Exception as e:
-        logging.error(f"Error creating expectation suite: {e}")
+        logging.error(f"Error saving expectation suite: {e}")
         raise
-    return expectation_suite_name
 
 
 def run_onboarding_data_assistant(batch_request, exclude_column_names=[]):
@@ -59,29 +106,29 @@ def run_onboarding_data_assistant(batch_request, exclude_column_names=[]):
         raise
 
 
-def save_expectation_suite(data_assistant_result, expectation_suite_name):
-    """Save the expectation suite obtained from the data assistant."""
+def prepare_expectation_suite():
+    """Prepare and create a new expectation suite with the current date as the name."""
+    current_date_str = datetime.now().strftime("%Y_%m_%d")
+    expectation_suite_name = f"data_profiling_suite_{current_date_str}"
+
     try:
-        expectation_suite = data_assistant_result.get_expectation_suite(expectation_suite_name=expectation_suite_name)
-        context.add_or_update_expectation_suite(expectation_suite=expectation_suite)
-        logging.info(f"Expectation suite '{expectation_suite_name}' saved successfully.")
+        context.create_expectation_suite(expectation_suite_name, overwrite_existing=True)
+        logging.info(f"Expectation suite '{expectation_suite_name}' created successfully.")
     except Exception as e:
-        logging.error(f"Error saving expectation suite: {e}")
+        logging.error(f"Error creating expectation suite: {e}")
         raise
+    return expectation_suite_name
 
 
-def wip(batch_request, expectation_suite_name):
-    checkpoint = context.add_or_update_checkpoint(
-        name="my_checkpoint",
-        validations=[
-            {
-                "batch_request": batch_request,
-                "expectation_suite_name": expectation_suite_name,
-            },
-        ],
-    )
-    checkpoint.run()
-    context.build_data_docs()
+def prepare_batch_request(env_vars):
+    """Prepare a batch request for the given data asset name."""
+    batch_request = {
+        "datasource_name": env_vars["GX_DATA_SRC"],
+        "data_connector_name": "default_configured_data_connector_name",
+        "data_asset_name": env_vars["INPUT_TABLE"],
+        "limit": int(env_vars["ROW_COUNT_LIMIT"]),
+    }
+    return batch_request
 
 
 def validate_inputs():
@@ -109,7 +156,9 @@ def main():
         expectation_suite_name = prepare_expectation_suite()
         data_assistant_result = run_onboarding_data_assistant(batch_request)
         save_expectation_suite(data_assistant_result, expectation_suite_name)
-        wip(batch_request, expectation_suite_name)
+        checkpoint_result = create_and_run_checkpoint(batch_request, expectation_suite_name)
+        modify_html_file("gx/uncommitted/data_docs/local_site/index.html")
+        last_bit(checkpoint_result)
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")

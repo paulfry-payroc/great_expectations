@@ -19,6 +19,21 @@ logger.setLevel(logging.INFO)
 
 # Constants
 DATA_DOCS_DIR = "gx/uncommitted/data_docs/local_site/"
+HTML_FILE_PATH = os.path.join(DATA_DOCS_DIR, "profiling_results.html")
+
+
+def remove_relative_paths_from_html():
+    """Removes occurrences of the string '../../../../' from the profiling_results.html file."""
+    # Read the content of the HTML file
+    with open(HTML_FILE_PATH) as file:
+        content = file.read()
+
+    # Replace the string "../../../../" with an empty string
+    modified_content = content.replace("../../../../", "")
+
+    # Write the modified content back to the HTML file
+    with open(HTML_FILE_PATH, "w") as file:
+        file.write(modified_content)
 
 
 def create_directory(directory):
@@ -120,6 +135,7 @@ def main():
         conn = setup_snowflake_connection(snowflake_env_vars)
         pandas_dataset = snowflake_query(conn, snowflake_env_vars["INPUT_TABLE"], snowflake_env_vars["ROW_COUNT_LIMIT"])
         generate_data_profiling_html(pandas_dataset)
+        remove_relative_paths_from_html()
     except Exception as e:
         logging.error(f"An error occurred: {e}")
 
