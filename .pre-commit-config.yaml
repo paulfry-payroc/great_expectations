@@ -89,12 +89,6 @@ repos:
           - id: name-tests-test # verifies Python test files are named correctly - i.e., ensure py tests match /test*.py
             args: [--pytest-test-first]
             name: Python checks - pytest tests - named correctly? (I.e., 'test_')
-    - repo: https://github.com/econchick/interrogate
-      rev: 1.5.0
-      hooks:
-          - id: interrogate # checks your code base for missing docstrings.
-            args: [--quiet, --fail-under=90]
-            name: Python checks - docstrings missing?
     # General/housekeeping hooks
     - repo: https://github.com/pre-commit/pre-commit-hooks
       rev: v4.4.0

@@ -20,13 +20,13 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 context = gx.get_context()
 
 
-def prepare_batch_request(gx_data_src, data_asset_name):
+def prepare_batch_request(env_vars):
     """Prepare a batch request for the given data asset name."""
     batch_request = {
-        "datasource_name": gx_data_src,
+        "datasource_name": env_vars["GX_DATA_SRC"],
         "data_connector_name": "default_configured_data_connector_name",
-        "data_asset_name": data_asset_name,
-        "limit": 1000,
+        "data_asset_name": env_vars["INPUT_TABLE"],
+        "limit": int(env_vars["ROW_COUNT_LIMIT"]),
     }
     return batch_request
 
@@ -70,27 +70,46 @@ def save_expectation_suite(data_assistant_result, expectation_suite_name):
         raise
 
 
+def wip(batch_request, expectation_suite_name):
+    checkpoint = context.add_or_update_checkpoint(
+        name="my_checkpoint",
+        validations=[
+            {
+                "batch_request": batch_request,
+                "expectation_suite_name": expectation_suite_name,
+            },
+        ],
+    )
+    checkpoint.run()
+    context.build_data_docs()
+
+
 def validate_inputs():
-    """Validate the presence of required environment variables."""
-    gx_data_src = os.getenv("GX_DATA_SRC")
-    data_asset_name = os.getenv("SNOWFLAKE_EXAMPLE_TBL")
+    """Validate the presence of required environment variables and return them as a dictionary."""
 
-    if not gx_data_src:
-        raise ValueError("GX_DATA_SRC environment variable is not set.")
-    if not data_asset_name:
-        raise ValueError("SNOWFLAKE_EXAMPLE_TBL environment variable is not set.")
+    # List of environment variables to validate
+    env_vars_to_validate = ["GX_DATA_SRC", "INPUT_TABLE", "ROW_COUNT_LIMIT"]
 
-    return gx_data_src, data_asset_name
+    env_vars = {}
+    for env_var in env_vars_to_validate:
+        value = os.getenv(env_var)
+        if not value:
+            raise ValueError(f"{env_var} environment variable is not set.")
+        else:
+            env_vars[env_var] = value
+            logger.debug(f"env_var '{env_var}' = {value}")
+    return env_vars
 
 
 def main():
-    """Main function to execute the data profiling script."""
+    """Main function to execute the script."""
     try:
-        gx_data_src, data_asset_name = validate_inputs()
-        batch_request = prepare_batch_request(gx_data_src, data_asset_name)
+        env_vars = validate_inputs()
+        batch_request = prepare_batch_request(env_vars)
         expectation_suite_name = prepare_expectation_suite()
         data_assistant_result = run_onboarding_data_assistant(batch_request)
         save_expectation_suite(data_assistant_result, expectation_suite_name)
+        wip(batch_request, expectation_suite_name)
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")

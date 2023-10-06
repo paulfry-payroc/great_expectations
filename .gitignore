@@ -1,8 +1,7 @@
 # g8-specific
 great_expectations.yml
-gx/great_expectations/.great_expectations
-gx/expectations/uncommitted/
 gx/expectations/.ge_store_backend_id
+gx/plugins/
 
 # Common credential files
 *.p8
