@@ -40,6 +40,15 @@ install:
 	@echo "${PURPLE}Step 2: Render GX jinja template files.${COLOUR_OFF}"
 	@j2 src/templates/jinja_templates/great_expectations.yml.j2 -o ${GX_PROJECT_DIR}/great_expectations.yml
 
+todo_create_data_source:
+	@echo "TODO"
+	@${VENV_ACTIVATE} && python3 src/py/create_data_source.py
+
+# this should be redundant
+todo_add_datasouces:
+	@#echo "TODO"
+	@#${VENV_ACTIVATE} && python3 src/py/add_data_asset.py
+
 test_connection:
 	@echo && echo "${YELLOW}Called makefile target 'test_connection'. Test the GX data source connection.${COLOUR_OFF}" && echo
 	@${VENV_ACTIVATE} && python3 src/py/test_snowflake_connection.py
@@ -66,3 +75,6 @@ clean:
 
 # .PHONY tells Make that these targets don't represent files
 # This prevents conflicts with any files named "all" or "clean"
+
+abc:
+	@${VENV_ACTIVATE} && python3 src/py/v1_multi_batch_request.py
