@@ -3,7 +3,6 @@ SHELL = /bin/sh
 #================================================================
 # Usage
 #================================================================
-# make installations	# install the package for the first time, managing dependencies & performing a housekeeping cleanup too
 # make deps		# just install the dependencies
 # make install		# perform the end-to-end install
 # make clean		# perform a housekeeping cleanup
@@ -26,7 +25,7 @@ GX_DATA_SRC := gx_datasource_snowflake
 #=======================================================================
 # Targets
 #=======================================================================
-all: clean deps install test
+all: clean deps install test_connection
 
 deps:
 	@echo && echo "${YELLOW}Called makefile target: 'deps'. Generate VENV with required pip packages.${COLOUR_OFF}" && echo
@@ -41,13 +40,19 @@ install:
 	@echo "${PURPLE}Step 2: Render GX jinja template files.${COLOUR_OFF}"
 	@j2 src/templates/jinja_templates/great_expectations.yml.j2 -o ${GX_PROJECT_DIR}/great_expectations.yml
 
-test:
-	@echo && echo "${YELLOW}Called makefile target 'test'. Test the GX data source connection.${COLOUR_OFF}" && echo
+test_connection:
+	@echo && echo "${YELLOW}Called makefile target 'test_connection'. Test the GX data source connection.${COLOUR_OFF}" && echo
 	@${VENV_ACTIVATE} && python3 src/py/test_snowflake_connection.py
 
 create_data_profile:
 	@${VENV_ACTIVATE} && python3 src/py/gx_snowflake_data_profiler.py
 	@${VENV_ACTIVATE} && python3 src/py/create_expectation_suite.py
+
+clean_gx:
+	@rm -rf gx/uncommitted/validations/*
+	@rm -rf gx/checkpoints/*
+	@rm -rf gx/expectations/*
+	@rm -rf gx/uncommitted/data_docs/local_site/*
 
 clean:
 	@echo && echo "${YELLOW}Called makefile target 'clean'. Purpose: restore the repo to it's initial state (i.e., remove all generated/created files).${COLOUR_OFF}" && echo
@@ -55,12 +60,6 @@ clean:
 	@rm -rf .venv
 	@echo "${PURPLE}* Delete the generated GX (greate expectations) directory${COLOUR_OFF}"
 	@rm -rf gx
-
-clean_gx:
-	@rm -rf gx/uncommitted/validations/*
-	@rm -rf gx/checkpoints/*
-	@rm -rf gx/expectations/*
-	@rm -rf gx/uncommitted/data_docs/local_site/*
 
 # Phony targets
 .PHONY: all deps install test clean

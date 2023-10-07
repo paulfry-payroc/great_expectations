@@ -25,7 +25,7 @@ validations:
           data_connector_name: default_configured_data_connector_name
           data_asset_name: BKP_CHANGE_HISTORY
           limit: 30
-      expectation_suite_name: data_profiling_suite_2023_10_06
+      expectation_suite_name: 2023_10_07_expectation_suite
 profilers: []
 ge_cloud_id:
 expectation_suite_ge_cloud_id:

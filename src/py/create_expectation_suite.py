@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import warnings
 from datetime import datetime
 
@@ -20,26 +21,33 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 context = gx.get_context()
 
 
-def last_bit(checkpoint_result):
+def open_dx_data_docs(checkpoint_result):
+    """Open the data documentation for the first validation result in the given checkpoint result."""
     validation_result_identifier = checkpoint_result.list_validation_result_identifiers()[0]
     context.open_data_docs(resource_identifier=validation_result_identifier)
 
 
 def modify_html_file(file_path):
     """Modifies the specified HTML file content, replacing the specified text."""
+
+    # Read the content of the HTML file
     with open(file_path) as file:
         content = file.read()
 
-    # Specify the text to be replaced and its replacement
-    old_text = (
-        '<li class="nav-item">\n'
-        '    <a class="nav-link" id="Expectation-Suites-tab" data-toggle="tab" href="#Expectation-Suites"\n'
-        '      role="tab" aria-selected="false" aria-controls="Expectation-Suites">\n'
-        "      Expectation Suites\n"
-        "    </a>\n"
-        "  </li>"
-    )
+    # Define the pattern to be found using a regular expression
+    old_text_pattern = r'<li class="nav-item">\s*<a\s*class="nav-link"\s*id="Expectation-Suites-tab"\s*data-toggle="tab"\s*href="#Expectation-Suites"\s*role="tab"\s*aria-selected="false"\s*aria-controls="Expectation-Suites">\s*Expectation Suites\s*</a>\s*</li>'  # noqa
 
+    # Specify the text to be replaced and its replacement
+    # old_text = (
+    #     '<li class="nav-item">\n'
+    #     '    <a class="nav-link" id="Expectation-Suites-tab" data-toggle="tab" href="#Expectation-Suites"\n'
+    #     '      role="tab" aria-selected="false" aria-controls="Expectation-Suites">\n'
+    #     "      Expectation Suites\n"
+    #     "    </a>\n"
+    #     "  </li>"
+    # )
+
+    # Define the replacement text
     new_text = (
         '<li class="nav-item">\n'
         '    <a class="nav-link" id="Expectation-Suites-tab" href="profiling_results.html"\n'
@@ -56,8 +64,8 @@ def modify_html_file(file_path):
         "  </li>"
     )
 
-    # Replace old_text with new_text in the content
-    modified_content = content.replace(old_text, new_text)
+    # Use regular expressions to replace the old text with the new text in the content
+    modified_content = re.sub(old_text_pattern, new_text, content)
 
     # Write the modified content back to the file
     with open(file_path, "w") as file:
@@ -108,8 +116,8 @@ def run_onboarding_data_assistant(batch_request, exclude_column_names=[]):
 
 def prepare_expectation_suite():
     """Prepare and create a new expectation suite with the current date as the name."""
-    current_date_str = datetime.now().strftime("%Y_%m_%d")
-    expectation_suite_name = f"data_profiling_suite_{current_date_str}"
+    current_date_str = datetime.now().strftime("%Y%m%d")
+    expectation_suite_name = f"{current_date_str}_expectation_suite"
 
     try:
         context.create_expectation_suite(expectation_suite_name, overwrite_existing=True)
@@ -158,7 +166,7 @@ def main():
         save_expectation_suite(data_assistant_result, expectation_suite_name)
         checkpoint_result = create_and_run_checkpoint(batch_request, expectation_suite_name)
         modify_html_file("gx/uncommitted/data_docs/local_site/index.html")
-        last_bit(checkpoint_result)
+        open_dx_data_docs(checkpoint_result)
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")
