@@ -1,5 +1,4 @@
 import logging
-import os
 import re
 import warnings
 from datetime import datetime
@@ -141,6 +140,11 @@ def prepare_batch_request(input_table, gx_data_src_name, row_count_limit):
     # build batch request
     batch_request = my_asset.build_batch_request()
 
+    batches = my_asset.get_batch_list_from_batch_request(batch_request)
+
+    for batch in batches:
+        print(batch.batch_spec)
+
     return batch_request
 
 
@@ -154,7 +158,12 @@ def load_config_from_yaml():
     other_params = data.get("other_params", {})
 
     # Validate if "input_tables" key is present, is a list, and is not empty
-    if input_tables is None or not isinstance(input_tables, list) or not input_tables or all(not item for item in input_tables):
+    if (
+        input_tables is None
+        or not isinstance(input_tables, list)
+        or not input_tables
+        or all(not item for item in input_tables)
+    ):
         raise ValueError("Invalid or empty 'input_tables' in the YAML file.")
 
     # Validate if the required keys in other_params are present

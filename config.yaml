@@ -3,4 +3,4 @@ input_tables:
     - bkp_change_history
 other_params:
     gx_data_src_name: gx_datasource_snowflake
-    row_count_limit: 30
+    row_count_limit: 3

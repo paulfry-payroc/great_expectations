@@ -67,6 +67,7 @@ def main():
     try:
         input_tables, other_params = load_config_from_yaml()
         gx_data_src_name = other_params["gx_data_src_name"]
+        row_count_limit = other_params["row_count_limit"]
         my_connection_string = create_connection_string()
         datasource = context.sources.add_snowflake(
             name=gx_data_src_name,
@@ -78,7 +79,11 @@ def main():
             logger.info(f"gx_data_src_name = {gx_data_src_name}")
             logger.info(f"table = {input_table}")
 
-            datasource.add_table_asset(name=input_table, table_name=input_table)
+            # datasource.add_table_asset(name=input_table, table_name=input_table)
+
+            query = f"SELECT * from {input_table} limit {row_count_limit}"
+
+            datasource.add_query_asset(name=input_table, query=query)
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")
