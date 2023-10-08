@@ -24,4 +24,4 @@ context = gx.get_context()
 
 datasource = context.datasources["gx_datasource_snowflake"]
 
-table_asset = datasource.add_table_asset(name="dim_card", table_name="dim_card")
+table_asset = datasource.add_table_asset(name="bkp_change_history", table_name="bkp_change_history")

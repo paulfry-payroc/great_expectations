@@ -32,26 +32,20 @@ deps:
 	@echo "${PURPLE}Step 1: Create a virtualenv (.venv) with the required Python libraries - see requirements.txt.${COLOUR_OFF}"
 	@python3 -m venv .venv && chmod +x ./.venv/bin/activate
 	@${VENV_ACTIVATE} && pip install -r requirements.txt -q
+	@echo "${PURPLE}Step 2: Create Great Expectations Project directory.${COLOUR_OFF}"
+	@${VENV_ACTIVATE} && echo "Y" | great_expectations init --no-usage-stats > /dev/null 2>&1
 
 install:
+	# TODO - wip
 	@echo && echo "${YELLOW}Called makefile target: 'install'. Run the setup and install targets.${COLOUR_OFF}" && echo
-	@echo "${PURPLE}Step 1: Create Great Expectations Project directory.${COLOUR_OFF}"
-	@${VENV_ACTIVATE} && echo "Y" | great_expectations init --no-usage-stats > /dev/null 2>&1
-	@echo "${PURPLE}Step 2: Render GX jinja template files.${COLOUR_OFF}"
-	@j2 src/templates/jinja_templates/great_expectations.yml.j2 -o ${GX_PROJECT_DIR}/great_expectations.yml
-
-todo_create_data_source:
-	@echo "TODO"
 	@${VENV_ACTIVATE} && python3 src/py/create_data_source.py
-
-# this should be redundant
-todo_add_datasouces:
-	@#echo "TODO"
-	@#${VENV_ACTIVATE} && python3 src/py/add_data_asset.py
 
 test_connection:
 	@echo && echo "${YELLOW}Called makefile target 'test_connection'. Test the GX data source connection.${COLOUR_OFF}" && echo
 	@${VENV_ACTIVATE} && python3 src/py/test_snowflake_connection.py
+
+a:
+	@${VENV_ACTIVATE} && python3 src/py/create_expectation_suite_v1.py
 
 create_data_profile:
 	@${VENV_ACTIVATE} && python3 src/py/gx_snowflake_data_profiler.py

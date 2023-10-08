@@ -22,10 +22,10 @@ runtime_configuration: {}
 validations:
     - batch_request:
           datasource_name: gx_datasource_snowflake
-          data_connector_name: default_configured_data_connector_name
-          data_asset_name: dim_business_unit
-          limit: 30
-      expectation_suite_name: 20231007_expectations_dim_business_unit
+          data_asset_name: bkp_change_history
+          options: {}
+          batch_slice:
+      expectation_suite_name: 20231008_expectations_bkp_change_history
 profilers: []
 ge_cloud_id:
 expectation_suite_ge_cloud_id:
