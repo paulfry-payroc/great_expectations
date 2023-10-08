@@ -144,23 +144,6 @@ def prepare_batch_request(input_table, gx_data_src_name, row_count_limit):
     return batch_request
 
 
-def validate_inputs():
-    """Validate the presence of required environment variables and return them as a dictionary."""
-
-    # List of environment variables to validate
-    env_vars_to_validate = ["GX_DATA_SRC", "INPUT_TABLE", "ROW_COUNT_LIMIT"]
-
-    env_vars = {}
-    for env_var in env_vars_to_validate:
-        value = os.getenv(env_var)
-        if not value:
-            raise ValueError(f"{env_var} environment variable is not set.")
-        else:
-            env_vars[env_var] = value
-            logger.debug(f"env_var '{env_var}' = {value}")
-    return env_vars
-
-
 def load_config_from_yaml():
     # Open and read YAML data from a file
     with open("config.yaml") as file:
@@ -171,12 +154,7 @@ def load_config_from_yaml():
     other_params = data.get("other_params", {})
 
     # Validate if "input_tables" key is present, is a list, and is not empty
-    if (
-        input_tables is None
-        or not isinstance(input_tables, list)
-        or not input_tables
-        or all(not item for item in input_tables)
-    ):
+    if input_tables is None or not isinstance(input_tables, list) or not input_tables or all(not item for item in input_tables):
         raise ValueError("Invalid or empty 'input_tables' in the YAML file.")
 
     # Validate if the required keys in other_params are present
@@ -208,7 +186,6 @@ def main():
             logger.info(f"gx_data_src_name = {gx_data_src_name}")
             logger.info(f"table = {input_table}")
             batch_request = prepare_batch_request(input_table, gx_data_src_name, row_count_limit)
-            # batch_request = prepare_batch_request(input_table, gx_data_src_name, row_count_limit)
             expectation_suite_name = prepare_expectation_suite(input_table)
             data_assistant_result = run_onboarding_data_assistant(batch_request)
             save_expectation_suite(data_assistant_result, expectation_suite_name)
