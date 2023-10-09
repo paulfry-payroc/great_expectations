@@ -47,18 +47,18 @@ def modify_html_file(file_path):
     # Define the replacement text
     new_text = (
         '<li class="nav-item">\n'
+        '    <a class="nav-link" id="Expectation-Suites-tab" data-toggle="tab" href="#Expectation-Suites"\n'
+        '      role="tab" aria-selected="false" aria-controls="Expectation-Suites">\n'
+        "      Expectation Suites\n"
+        "    </a>\n"
+        "</li>"
+        "\n"
+        '<li class="nav-item">\n'
         '    <a class="nav-link" id="Expectation-Suites-tab" href="profiling_results.html"\n'
         '      aria-selected="false" aria-controls="Expectation-Suites">\n'
         "      Profiling Results\n"
         "    </a>\n"
         "  </li>\n"
-        "\n"
-        '  <li class="nav-item">\n'
-        '    <a class="nav-link" id="Expectation-Suites-tab" data-toggle="tab" href="#Expectation-Suites"\n'
-        '      role="tab" aria-selected="false" aria-controls="Expectation-Suites">\n'
-        "      Expectation Suites\n"
-        "    </a>\n"
-        "  </li>"
     )
 
     # Use regular expressions to replace the old text with the new text in the content
@@ -136,8 +136,7 @@ def prepare_batch_request(input_table, gx_data_src_name, row_count_limit):
 
     batches = my_asset.get_batch_list_from_batch_request(batch_request)
 
-    for batch in batches:
-        print(batch.batch_spec)
+    [logger.debug(batch.batch_spec) for batch in batches]
 
     return batch_request
 
@@ -152,7 +151,7 @@ def main():
         )
 
         for input_table in input_tables:
-            logger.info(f"table = {input_table}")
+            logger.debug(f"table = {input_table}")
             batch_request = prepare_batch_request(input_table, gx_data_src_name, row_count_limit)
             expectation_suite_name = prepare_expectation_suite(input_table)
             data_assistant_result = run_onboarding_data_assistant(batch_request)

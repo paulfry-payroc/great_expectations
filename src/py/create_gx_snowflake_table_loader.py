@@ -1,32 +1,54 @@
+import warnings
+
 import common
 import great_expectations as gx
 
 # Set up a specific logger with our desired output level
 logger = common.get_logger()
 
-context = gx.get_context()
+# Suppress DeprecationWarning for create_expectation_suite
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
-def main():
-    """Main function to execute the script."""
+def get_or_create_datasource(context, gx_data_src_name):
+    """Get an existing datasource or create a new one if not exists."""
 
     try:
-        input_tables, other_params = common.load_config_from_yaml()
-        gx_data_src_name, row_count_limit = other_params["gx_data_src_name"], other_params["row_count_limit"]
-        datasource = context.sources.add_snowflake(
-            name=gx_data_src_name,
-            connection_string=common.create_snowflake_connection_string(),
+        return context.get_datasource(gx_data_src_name)
+    except ValueError:
+        return context.sources.add_snowflake(
+            name=gx_data_src_name, connection_string=common.create_snowflake_connection_string()
         )
 
-        # add input tables to data source
-        for input_table in input_tables:
-            logger.debug(f"table = {input_table}")
 
-            datasource.add_query_asset(name=input_table, query=f"SELECT * FROM {input_table} LIMIT {row_count_limit}")
+def add_snowflake_tables_to_gx():
+    """Load configuration and add assets to the Great Expectations data context."""
+    try:
+        # Validate environment variables
+        common.validate_environment_variables()
 
-    except Exception as e:
+        # Set up a data context
+        context = gx.data_context.DataContext()
+
+        # Fetch input parameters from config.yaml
+        input_tables, other_params = common.load_config_from_yaml()
+
+        # Fetch the remaining params
+        gx_data_src_name, row_count_limit = other_params["gx_data_src_name"], other_params["row_count_limit"]
+
+        # Get or create datasource and add assets
+        for table in input_tables:
+            try:
+                datasource = get_or_create_datasource(context, gx_data_src_name)
+                datasource.add_query_asset(name=table, query=f"SELECT * FROM {table} LIMIT {row_count_limit}")
+                logger.debug(f"Table '{table}' added successfully.")
+            except Exception as e:
+                logger.error(f"Error adding table '{table}': {e}")
+                raise
+    except (common.MissingEnvironmentVariableError, ValueError) as e:
         logger.error(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":
-    main()
+    # Load and add assets to the Great Expectations data context
+    add_snowflake_tables_to_gx()

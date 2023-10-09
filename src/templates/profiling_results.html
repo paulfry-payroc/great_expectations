@@ -724,7 +724,7 @@
                 <div class="float-left navbar-brand m-0 h-100">
                     <a href="#">
                         <img class="NO-CACHE"
-                            src="https://great-expectations-web-assets.s3.us-east-2.amazonaws.com/logo-long.png?d=20231009T124228.316647Z"
+                            src="https://great-expectations-web-assets.s3.us-east-2.amazonaws.com/logo-long.png?d=20231009T200228.546643Z"
                             alt="Great Expectations" style="width: auto; height: 50px" />
                     </a>
                 </div>
@@ -830,17 +830,10 @@
                                 <ul class="nav nav-tabs" id=section-1-content-block-2-tabs-nav role="tablist">
 
                                     <li class="nav-item">
-                                        <a class="nav-link active" id="Validation-Results-tab" data-toggle="tab"
+                                        <a class="nav-link" id="Validation-Results-tab" data-toggle="tab"
                                             href="#Validation-Results" role="tab" aria-selected="true"
                                             aria-controls="Validation-Results">
                                             Validation Results
-                                        </a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a class="nav-link" id="Expectation-Suites-tab" href="profiling_results.html"
-                                            aria-selected="false" aria-controls="Expectation-Suites">
-                                            Profiling Results
                                         </a>
                                     </li>
 
@@ -851,6 +844,13 @@
                                             Expectation Suites
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="Profiling-Results-tab" href=""
+                                            aria-selected="false" aria-controls="Profiling-Results">
+                                            Profiling Results
+                                        </a>
+                                    </li>
+
 
                                 </ul>
 
@@ -929,6 +929,29 @@
                                             }
                                         </script>
 
+                                        <script>
+                                            $('#section-1-content-block-2-1-body-table').bootstrapTable(
+                                                Object.assign(
+                                                    {
+                                                        columns: [{ 'field': 'validation_success', 'title': 'Status', 'sortable': 'true', 'align': 'center', 'filterControl': 'select', 'filterDataCollector': 'validationSuccessFilterDataCollector' }, { 'field': 'run_time', 'title': 'Run Time', 'sortName': '_run_time_sort', 'sortable': 'true', 'filterControl': 'datepicker', 'filterCustomSearch': 'formatRuntimeDateForFilter', 'filterDatepickerOptions': { 'clearBtn': 'true', 'autoclose': 'true', 'format': 'yyyy-mm-dd', 'todayHighlight': 'true' } }, { 'field': 'run_name', 'title': 'Run Name', 'sortable': 'true', 'filterControl': 'input' }, { 'field': 'asset_name', 'title': 'Asset Name', 'sortable': 'true', 'filterControl': 'select' }, { 'field': 'batch_identifier', 'title': 'Batch ID', 'sortName': '_batch_identifier_sort', 'sortable': 'true', 'filterControl': 'input' }, { 'field': 'expectation_suite_name', 'title': 'Expectation Suite', 'sortName': '_expectation_suite_name_sort', 'sortable': 'true', 'filterControl': 'select', 'filterDataCollector': 'expectationSuiteNameFilterDataCollector' }],
+                                                        data: [{ 'validation_success': '\n                <span class="ge-index-page-table-validation-links-item" >\n                    <i class="fas fa-check-circle text-success ge-success-icon" ></i>\n                </span>\n            ', 'run_time': '2023-10-09 21:02:26 BST', '_run_time_sort': 1696881746.172502, 'run_name': '__none__', 'batch_identifier': '\n                <span class="m-0 p-0 cooltip" >\n                    gx_datasource_snowflake-dim_business_unit\n                    <span class=top>\n                        Batch Spec:\n\n{\n  "batch_identifiers": {},\n  "data_asset_name": "dim_business_unit",\n  "query": "SELECT * FROM dim_business_unit LIMIT 5",\n  "temp_table_schema_name": null\n}\n                    </span>\n                </span>\n            ', '_batch_identifier_sort': 'gx_datasource_snowflake-dim_business_unit', 'expectation_suite_name': '\n                <a class="ge-index-page-table-expectation-suite-link" href="expectations/20231009_dim_business_unit.html" style="word-break:break-all;" >\n                    20231009_dim_business_unit\n                </a>\n            ', '_expectation_suite_name_sort': '20231009_dim_business_unit', '_table_row_link_path': 'validations/20231009_dim_business_unit/__none__/20231009T200226.172502Z/gx_datasource_snowflake-dim_business_unit.html', '_validation_success_text': 'Success', 'asset_name': 'dim_business_unit' }, { 'validation_success': '\n                <span class="ge-index-page-table-validation-links-item" >\n                    <i class="fas fa-check-circle text-success ge-success-icon" ></i>\n                </span>\n            ', 'run_time': '2023-10-09 21:01:58 BST', '_run_time_sort': 1696881718.65466, 'run_name': '__none__', 'batch_identifier': '\n                <span class="m-0 p-0 cooltip" >\n                    gx_datasource_snowflake-bkp_change_history\n                    <span class=top>\n                        Batch Spec:\n\n{\n  "batch_identifiers": {},\n  "data_asset_name": "bkp_change_history",\n  "query": "SELECT * FROM bkp_change_history LIMIT 5",\n  "temp_table_schema_name": null\n}\n                    </span>\n                </span>\n            ', '_batch_identifier_sort': 'gx_datasource_snowflake-bkp_change_history', 'expectation_suite_name': '\n                <a class="ge-index-page-table-expectation-suite-link" href="expectations/20231009_bkp_change_history.html" style="word-break:break-all;" >\n                    20231009_bkp_change_history\n                </a>\n            ', '_expectation_suite_name_sort': '20231009_bkp_change_history', '_table_row_link_path': 'validations/20231009_bkp_change_history/__none__/20231009T200158.654660Z/gx_datasource_snowflake-bkp_change_history.html', '_validation_success_text': 'Success', 'asset_name': 'bkp_change_history' }],
+                                                        toolbar: '#section-1-content-block-2-1-body-table-toolbar'
+                                                    },
+                                                    { 'search': 'true', 'trimOnSearch': 'false', 'visibleSearch': 'true', 'rowStyle': 'rowStyleLinks', 'rowAttributes': 'rowAttributesLinks', 'sortName': 'run_time', 'sortOrder': 'desc', 'pagination': 'true', 'filterControl': 'true', 'iconSize': 'sm', 'toolbarAlign': 'right', 'showSearchClearButton': 'true' }
+                                                )
+                                            );
+
+
+
+
+                                            $(document).ready(function () {
+                                                $("#section-1-content-block-2-1-body-table").on('click-row.bs.table', function (e, row, $element) {
+                                                    window.location = $element.data("href");
+                                                })
+                                            }
+                                            );
+
+                                        </script>
                                     </div>
 
                                     <div class="tab-pane fade" id="Expectation-Suites" role="tabpanel"
@@ -945,11 +968,8 @@
 
 
 
-                                        <table id="abc" class="abc" data-toggle="table">
-                                            <thead>
-                                                <tr></tr>
-                                                <th>My heading</th>
-                                            </thead>
+                                        <table id="section-1-content-block-2-2-body-table"
+                                            class="table-sm ge-index-page-expectation_suites-table" data-toggle="table">
                                         </table>
 
                                         <script>
@@ -1001,88 +1021,256 @@
                                             }
                                         </script>
 
-                                        <script>
-                                            $('#section-1-content-block-2-2-body-table').bootstrapTable(
-                                                Object.assign(
-                                                    {
-                                                        columns: [{ 'field': 'expectation_suite_name', 'title': 'Expectation Suites', 'sortable': 'true' }],
-                                                        data: [{ 'expectation_suite_name': '20231009_bkp_change_history', '_table_row_link_path': 'expectations/20231009_bkp_change_history.html' }, { 'expectation_suite_name': '20231009_dim_business_unit', '_table_row_link_path': 'expectations/20231009_dim_business_unit.html' }],
-                                                        toolbar: '#section-1-content-block-2-2-body-table-toolbar'
-                                                    },
-                                                    { 'search': 'true', 'trimOnSearch': 'false', 'visibleSearch': 'true', 'rowStyle': 'rowStyleLinks', 'rowAttributes': 'rowAttributesLinks', 'sortName': 'expectation_suite_name', 'sortOrder': 'asc', 'pagination': 'true', 'iconSize': 'sm', 'toolbarAlign': 'right' }
-                                                )
-                                            );
+                                        <!-- pf here
+-->
+
+                                        <div class="tab-pane fade show active" id="Profiling-Results" role="tabpanel"
+                                            aria-labelledby="Profiling-Results-tab">
 
 
 
 
-                                            $(document).ready(function () {
-                                                $("#section-1-content-block-2-2-body-table").on('click-row.bs.table', function (e, row, $element) {
-                                                    window.location = $element.data("href");
-                                                })
-                                            }
-                                            );
 
-                                        </script>
+
+
+
+
+
+
+
+                                            <script>
+                                                function rowStyleLinks(row, index) {
+                                                    return {
+                                                        css: {
+                                                            cursor: "pointer"
+                                                        }
+                                                    }
+                                                }
+
+                                                function rowAttributesLinks(row, index) {
+                                                    return {
+                                                        "class": "clickable-row",
+                                                        "data-href": row._table_row_link_path
+                                                    }
+                                                }
+
+                                                function expectationSuiteNameFilterDataCollector(value, row, formattedValue) {
+                                                    return row._expectation_suite_name_sort;
+                                                }
+
+                                                function validationSuccessFilterDataCollector(value, row, formattedValue) {
+                                                    return row._validation_success_text;
+                                                }
+
+                                                function getFormattedDateWithoutTime(d) {
+
+                                                    month = '' + (d.getMonth() + 1),
+                                                        day = '' + d.getDate(),
+                                                        year = d.getFullYear();
+
+                                                    if (month.length < 2)
+                                                        month = '0' + month;
+                                                    if (day.length < 2)
+                                                        day = '0' + day;
+
+                                                    return [year, month, day].join('-');
+                                                }
+
+                                                function formatRuntimeDateForFilter(text, value, field, data) {
+                                                    const cellValueAsDateObj = new Date(value);
+                                                    return text == getFormattedDateWithoutTime(cellValueAsDateObj);
+                                                }
+
+                                                function clearTableFilters(tableId) {
+                                                    $(`#${tableId}`).bootstrapTable('clearFilterControl');
+                                                    $(`#${tableId}`).bootstrapTable('resetSearch');
+                                                }
+                                            </script>
+
+                                            <script>
+                                                $('#section-1-content-block-2-1-body-table').bootstrapTable(
+                                                    Object.assign(
+                                                        {
+                                                            columns: [{ 'field': 'validation_success', 'title': 'Status', 'sortable': 'true', 'align': 'center', 'filterControl': 'select', 'filterDataCollector': 'validationSuccessFilterDataCollector' }, { 'field': 'run_time', 'title': 'Run Time', 'sortName': '_run_time_sort', 'sortable': 'true', 'filterControl': 'datepicker', 'filterCustomSearch': 'formatRuntimeDateForFilter', 'filterDatepickerOptions': { 'clearBtn': 'true', 'autoclose': 'true', 'format': 'yyyy-mm-dd', 'todayHighlight': 'true' } }, { 'field': 'run_name', 'title': 'Run Name', 'sortable': 'true', 'filterControl': 'input' }, { 'field': 'asset_name', 'title': 'Asset Name', 'sortable': 'true', 'filterControl': 'select' }, { 'field': 'batch_identifier', 'title': 'Batch ID', 'sortName': '_batch_identifier_sort', 'sortable': 'true', 'filterControl': 'input' }, { 'field': 'expectation_suite_name', 'title': 'Expectation Suite', 'sortName': '_expectation_suite_name_sort', 'sortable': 'true', 'filterControl': 'select', 'filterDataCollector': 'expectationSuiteNameFilterDataCollector' }],
+                                                            data: [{ 'validation_success': '\n                <span class="ge-index-page-table-validation-links-item" >\n                    <i class="fas fa-check-circle text-success ge-success-icon" ></i>\n                </span>\n            ', 'run_time': '2023-10-09 21:02:26 BST', '_run_time_sort': 1696881746.172502, 'run_name': '__none__', 'batch_identifier': '\n                <span class="m-0 p-0 cooltip" >\n                    gx_datasource_snowflake-dim_business_unit\n                    <span class=top>\n                        Batch Spec:\n\n{\n  "batch_identifiers": {},\n  "data_asset_name": "dim_business_unit",\n  "query": "SELECT * FROM dim_business_unit LIMIT 5",\n  "temp_table_schema_name": null\n}\n                    </span>\n                </span>\n            ', '_batch_identifier_sort': 'gx_datasource_snowflake-dim_business_unit', 'expectation_suite_name': '\n                <a class="ge-index-page-table-expectation-suite-link" href="expectations/20231009_dim_business_unit.html" style="word-break:break-all;" >\n                    20231009_dim_business_unit\n                </a>\n            ', '_expectation_suite_name_sort': '20231009_dim_business_unit', '_table_row_link_path': 'validations/20231009_dim_business_unit/__none__/20231009T200226.172502Z/gx_datasource_snowflake-dim_business_unit.html', '_validation_success_text': 'Success', 'asset_name': 'dim_business_unit' }, { 'validation_success': '\n                <span class="ge-index-page-table-validation-links-item" >\n                    <i class="fas fa-check-circle text-success ge-success-icon" ></i>\n                </span>\n            ', 'run_time': '2023-10-09 21:01:58 BST', '_run_time_sort': 1696881718.65466, 'run_name': '__none__', 'batch_identifier': '\n                <span class="m-0 p-0 cooltip" >\n                    gx_datasource_snowflake-bkp_change_history\n                    <span class=top>\n                        Batch Spec:\n\n{\n  "batch_identifiers": {},\n  "data_asset_name": "bkp_change_history",\n  "query": "SELECT * FROM bkp_change_history LIMIT 5",\n  "temp_table_schema_name": null\n}\n                    </span>\n                </span>\n            ', '_batch_identifier_sort': 'gx_datasource_snowflake-bkp_change_history', 'expectation_suite_name': '\n                <a class="ge-index-page-table-expectation-suite-link" href="expectations/20231009_bkp_change_history.html" style="word-break:break-all;" >\n                    20231009_bkp_change_history\n                </a>\n            ', '_expectation_suite_name_sort': '20231009_bkp_change_history', '_table_row_link_path': 'validations/20231009_bkp_change_history/__none__/20231009T200158.654660Z/gx_datasource_snowflake-bkp_change_history.html', '_validation_success_text': 'Success', 'asset_name': 'bkp_change_history' }],
+                                                            toolbar: '#section-1-content-block-2-1-body-table-toolbar'
+                                                        },
+                                                        { 'search': 'true', 'trimOnSearch': 'false', 'visibleSearch': 'true', 'rowStyle': 'rowStyleLinks', 'rowAttributes': 'rowAttributesLinks', 'sortName': 'run_time', 'sortOrder': 'desc', 'pagination': 'true', 'filterControl': 'true', 'iconSize': 'sm', 'toolbarAlign': 'right', 'showSearchClearButton': 'true' }
+                                                    )
+                                                );
+
+
+
+
+                                                $(document).ready(function () {
+                                                    $("#section-1-content-block-2-1-body-table").on('click-row.bs.table', function (e, row, $element) {
+                                                        window.location = $element.data("href");
+                                                    })
+                                                }
+                                                );
+
+                                            </script>
+                                        </div>
+
+                                        <div class="tab-pane fade" id="Expectation-Suites" role="tabpanel"
+                                            aria-labelledby="Expectation-Suites-tab">
+
+
+
+
+
+
+
+
+
+
+                                            <div id="section-1-content-block-2-2-body-table-toolbar" class="ml-1">
+
+                                                <button class="btn btn-sm btn-secondary ml-1"
+                                                    onclick="clearTableFilters('section-1-content-block-2-2-body-table')">Clear
+                                                    Filters</button>
+
+                                            </div>
+
+                                            <table id="section-1-content-block-2-2-body-table"
+                                                class="table-sm ge-index-page-expectation_suites-table"
+                                                data-toggle="table">
+                                            </table>
+
+                                            <script>
+                                                function rowStyleLinks(row, index) {
+                                                    return {
+                                                        css: {
+                                                            cursor: "pointer"
+                                                        }
+                                                    }
+                                                }
+
+                                                function rowAttributesLinks(row, index) {
+                                                    return {
+                                                        "class": "clickable-row",
+                                                        "data-href": row._table_row_link_path
+                                                    }
+                                                }
+
+                                                function expectationSuiteNameFilterDataCollector(value, row, formattedValue) {
+                                                    return row._expectation_suite_name_sort;
+                                                }
+
+                                                function validationSuccessFilterDataCollector(value, row, formattedValue) {
+                                                    return row._validation_success_text;
+                                                }
+
+                                                function getFormattedDateWithoutTime(d) {
+
+                                                    month = '' + (d.getMonth() + 1),
+                                                        day = '' + d.getDate(),
+                                                        year = d.getFullYear();
+
+                                                    if (month.length < 2)
+                                                        month = '0' + month;
+                                                    if (day.length < 2)
+                                                        day = '0' + day;
+
+                                                    return [year, month, day].join('-');
+                                                }
+
+                                                function formatRuntimeDateForFilter(text, value, field, data) {
+                                                    const cellValueAsDateObj = new Date(value);
+                                                    return text == getFormattedDateWithoutTime(cellValueAsDateObj);
+                                                }
+
+                                                function clearTableFilters(tableId) {
+                                                    $(`#${tableId}`).bootstrapTable('clearFilterControl');
+                                                    $(`#${tableId}`).bootstrapTable('resetSearch');
+                                                }
+                                            </script>
+
+                                            <!-- pf to here -->
+
+                                            <script>
+                                                $('#section-1-content-block-2-2-body-table').bootstrapTable(
+                                                    Object.assign(
+                                                        {
+                                                            columns: [{ 'field': 'expectation_suite_name', 'title': 'Expectation Suites', 'sortable': 'true' }],
+                                                            data: [{ 'expectation_suite_name': '20231009_bkp_change_history', '_table_row_link_path': 'expectations/20231009_bkp_change_history.html' }, { 'expectation_suite_name': '20231009_dim_business_unit', '_table_row_link_path': 'expectations/20231009_dim_business_unit.html' }],
+                                                            toolbar: '#section-1-content-block-2-2-body-table-toolbar'
+                                                        },
+                                                        { 'search': 'true', 'trimOnSearch': 'false', 'visibleSearch': 'true', 'rowStyle': 'rowStyleLinks', 'rowAttributes': 'rowAttributesLinks', 'sortName': 'expectation_suite_name', 'sortOrder': 'asc', 'pagination': 'true', 'iconSize': 'sm', 'toolbarAlign': 'right' }
+                                                    )
+                                                );
+
+
+
+
+                                                $(document).ready(function () {
+                                                    $("#section-1-content-block-2-2-body-table").on('click-row.bs.table', function (e, row, $element) {
+                                                        window.location = $element.data("href");
+                                                    })
+                                                }
+                                                );
+
+                                            </script>
+                                        </div>
+
                                     </div>
-
                                 </div>
+
                             </div>
 
                         </div>
-
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
-    </div>
 
-    <footer>
-        <p>Stay current on everything GX with our newsletter <a
-                href="https://greatexpectations.io/newsletter?utm_source=datadocs&utm_medium=product&utm_campaign=newsletter&utm_content=form">Subscribe</a>
-        </p>
-    </footer>
+        <footer>
+            <p>Stay current on everything GX with our newsletter <a
+                    href="https://greatexpectations.io/newsletter?utm_source=datadocs&utm_medium=product&utm_campaign=newsletter&utm_content=form">Subscribe</a>
+            </p>
+        </footer>
 
 
-    <footer class="border border-info alert alert-info fixed-bottom alert-dismissible fade show m-0 rounded-0 invisible"
-        id="ge-cta-footer" role="alert">
-        <h5 class="alert-heading text-center">
+        <footer
+            class="border border-info alert alert-info fixed-bottom alert-dismissible fade show m-0 rounded-0 invisible"
+            id="ge-cta-footer" role="alert">
+            <h5 class="alert-heading text-center">
 
-            <span class="cooltip">
-                <i class="m-1 fas fa-question-circle"></i>
-                <span class=top>
-                    To disable this footer, set the show_how_to_buttons flag in your project's data_docs_sites config to
-                    false.
+                <span class="cooltip">
+                    <i class="m-1 fas fa-question-circle"></i>
+                    <span class=top>
+                        To disable this footer, set the show_how_to_buttons flag in your project's data_docs_sites
+                        config to false.
+                    </span>
                 </span>
-            </span>
 
-            To continue exploring Great Expectations check out one of these tutorials...
-        </h5>
-        <div class="d-flex justify-content-center flex-sm-row flex-column">
+                To continue exploring Great Expectations check out one of these tutorials...
+            </h5>
+            <div class="d-flex justify-content-center flex-sm-row flex-column">
 
-            <a href="https://docs.greatexpectations.io/docs/guides/expectations/how_to_create_and_edit_expectations_with_instant_feedback_from_a_sample_batch_of_data"
-                class="btn btn-primary m-2" rel="noopener noreferrer" target="_blank">How to Create Expectations</a>
+                <a href="https://docs.greatexpectations.io/docs/guides/expectations/how_to_create_and_edit_expectations_with_instant_feedback_from_a_sample_batch_of_data"
+                    class="btn btn-primary m-2" rel="noopener noreferrer" target="_blank">How to Create Expectations</a>
 
-            <a href="https://docs.greatexpectations.io/docs/guides/validation/checkpoints/how_to_create_a_new_checkpoint"
-                class="btn btn-primary m-2" rel="noopener noreferrer" target="_blank">How to Validate Data</a>
+                <a href="https://docs.greatexpectations.io/docs/guides/validation/checkpoints/how_to_create_a_new_checkpoint"
+                    class="btn btn-primary m-2" rel="noopener noreferrer" target="_blank">How to Validate Data</a>
 
-            <a href="https://docs.greatexpectations.io/docs/guides/setup/configuring_data_docs/how_to_host_and_share_data_docs_on_a_filesystem"
-                class="btn btn-primary m-2" rel="noopener noreferrer" target="_blank">How to Set Up a Team Site</a>
+                <a href="https://docs.greatexpectations.io/docs/guides/setup/configuring_data_docs/how_to_host_and_share_data_docs_on_a_filesystem"
+                    class="btn btn-primary m-2" rel="noopener noreferrer" target="_blank">How to Set Up a Team Site</a>
 
-        </div>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </footer>
-    <script>
-        if (sessionStorage.getItem("showCta") !== "false") {
-            $('#ge-cta-footer').removeClass("invisible")
-        }
-        $('#ge-cta-footer').on('closed.bs.alert', function () {
-            sessionStorage.setItem("showCta", false)
-        })
-    </script>
+            </div>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </footer>
+        <script>
+            if (sessionStorage.getItem("showCta") !== "false") {
+                $('#ge-cta-footer').removeClass("invisible")
+            }
+            $('#ge-cta-footer').on('closed.bs.alert', function () {
+                sessionStorage.setItem("showCta", false)
+            })
+        </script>
 
 </body>
 
