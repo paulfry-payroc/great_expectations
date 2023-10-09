@@ -1,6 +1,6 @@
-import logging
 import os
 
+import common
 import pandas as pd
 import snowflake.connector
 from dotenv import load_dotenv
@@ -13,10 +13,8 @@ from great_expectations.render.view import DefaultJinjaPageView
 # Load environment variables from .env file
 load_dotenv()
 
-# Set up a specific logger with our desired output level"""
-logging.basicConfig(format="%(message)s")
-logger = logging.getLogger("application_logger")
-logger.setLevel(logging.INFO)
+# Set up a specific logger with our desired output level
+logger = common.get_logger()
 
 # Constants
 DATA_DOCS_DIR = "gx/uncommitted/data_docs/local_site/"
@@ -140,14 +138,20 @@ def validate_inputs():
 
 
 def main():
-    try:
-        snowflake_env_vars = validate_inputs()
-        conn = setup_snowflake_connection(snowflake_env_vars)
-        pandas_dataset = snowflake_query(conn, snowflake_env_vars["INPUT_TABLE"], snowflake_env_vars["ROW_COUNT_LIMIT"])
-        generate_data_profiling_html(pandas_dataset)
-        remove_relative_paths_from_html()
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")
+    input_tables, other_params = common.load_config_from_yaml()
+    gx_data_src_name, row_count_limit = other_params["gx_data_src_name"], other_params["row_count_limit"]
+    logger.debug(
+        f"input tables = {input_tables}\ngx_data_src_name = {gx_data_src_name}\nrow_count_limit = {row_count_limit}"
+    )
+
+    # try:
+    #     snowflake_env_vars = validate_inputs()
+    #     conn = setup_snowflake_connection(snowflake_env_vars)
+    #     pandas_dataset = snowflake_query(conn, snowflake_env_vars["INPUT_TABLE"], snowflake_env_vars["ROW_COUNT_LIMIT"])
+    #     generate_data_profiling_html(pandas_dataset)
+    #     remove_relative_paths_from_html()
+    # except Exception as e:
+    #     logger.error(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":

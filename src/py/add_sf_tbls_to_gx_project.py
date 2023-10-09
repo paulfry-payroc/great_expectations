@@ -1,9 +1,7 @@
-import logging
-
 import common
 import great_expectations as gx
 
-# Set up a specific logger with our desired output level"""
+# Set up a specific logger with our desired output level
 logger = common.get_logger()
 
 context = gx.get_context()
@@ -27,7 +25,7 @@ def main():
             datasource.add_query_asset(name=input_table, query=f"SELECT * FROM {input_table} LIMIT {row_count_limit}")
 
     except Exception as e:
-        logging.error(f"An error occurred: {e}")
+        logger.error(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":

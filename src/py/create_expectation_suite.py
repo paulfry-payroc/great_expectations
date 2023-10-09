@@ -1,18 +1,15 @@
-import logging
 import re
 import warnings
 from datetime import datetime
 
+import common
 import great_expectations as gx
-import yaml
 from dotenv import load_dotenv
 
 load_dotenv()  # Load environment variables from .env file
 
-# Set up a specific logger with our desired output level"""
-logging.basicConfig(format="%(message)s")
-logger = logging.getLogger("application_logger")
-logger.setLevel(logging.INFO)
+# Set up a specific logger with our desired output level
+logger = common.get_logger()
 
 # Suppress DeprecationWarning for create_expectation_suite
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -94,9 +91,9 @@ def save_expectation_suite(data_assistant_result, expectation_suite_name):
     try:
         expectation_suite = data_assistant_result.get_expectation_suite(expectation_suite_name=expectation_suite_name)
         context.add_or_update_expectation_suite(expectation_suite=expectation_suite)
-        logging.info(f"Expectation suite '{expectation_suite_name}' saved successfully.")
+        logger.info(f"Expectation suite '{expectation_suite_name}' saved successfully.")
     except Exception as e:
-        logging.error(f"Error saving expectation suite: {e}")
+        logger.error(f"Error saving expectation suite: {e}")
         raise
 
 
@@ -107,10 +104,10 @@ def run_onboarding_data_assistant(batch_request, exclude_column_names=[]):
 
     try:
         data_assistant_result = context.assistants.onboarding.run(batch_request=batch_request)
-        logging.info("Data assistant run successful.")
+        logger.info("Data assistant run successful.")
         return data_assistant_result
     except Exception as e:
-        logging.error(f"Error running data assistant: {e}")
+        logger.error(f"Error running data assistant: {e}")
         raise
 
 
@@ -121,9 +118,9 @@ def prepare_expectation_suite(input_table):
 
     try:
         context.create_expectation_suite(expectation_suite_name, overwrite_existing=True)
-        logging.info(f"Expectation suite '{expectation_suite_name}' created successfully.")
+        logger.info(f"Expectation suite '{expectation_suite_name}' created successfully.")
     except Exception as e:
-        logging.error(f"Error creating expectation suite: {e}")
+        logger.error(f"Error creating expectation suite: {e}")
         raise
     return expectation_suite_name
 
@@ -148,51 +145,16 @@ def prepare_batch_request(input_table, gx_data_src_name, row_count_limit):
     return batch_request
 
 
-def load_config_from_yaml():
-    # Open and read YAML data from a file
-    with open("config.yaml") as file:
-        # Load YAML data into a Python dictionary
-        data = yaml.safe_load(file)
-
-    input_tables = data.get("input_tables")
-    other_params = data.get("other_params", {})
-
-    # Validate if "input_tables" key is present, is a list, and is not empty
-    if (
-        input_tables is None
-        or not isinstance(input_tables, list)
-        or not input_tables
-        or all(not item for item in input_tables)
-    ):
-        raise ValueError("Invalid or empty 'input_tables' in the YAML file.")
-
-    # Validate if the required keys in other_params are present
-    required_other_params_keys = ["gx_data_src_name", "row_count_limit"]
-    for key in required_other_params_keys:
-        if key is None or key not in other_params or not other_params[key]:
-            raise ValueError(f"Invalid or missing key '{key}' in other_params.")
-
-    input_tables_lowercase = [table.lower() for table in input_tables]
-
-    logger.debug(input_tables_lowercase)
-    logger.debug(other_params)
-
-    return input_tables_lowercase, other_params
-
-
 def main():
     """Main function to execute the script."""
     try:
-        input_tables, other_params = load_config_from_yaml()
-        gx_data_src_name = other_params["gx_data_src_name"]
-        row_count_limit = other_params["row_count_limit"]
-
-        logger.debug(f"input tables = {input_tables}")
-        logger.debug(f"gx_data_src_name = {gx_data_src_name}")
-        logger.debug(f"row_count_limit = {row_count_limit}")
+        input_tables, other_params = common.load_config_from_yaml()
+        gx_data_src_name, row_count_limit = other_params["gx_data_src_name"], other_params["row_count_limit"]
+        logger.debug(
+            f"input tables = {input_tables}\ngx_data_src_name = {gx_data_src_name}\nrow_count_limit = {row_count_limit}"
+        )
 
         for input_table in input_tables:
-            logger.info(f"gx_data_src_name = {gx_data_src_name}")
             logger.info(f"table = {input_table}")
             batch_request = prepare_batch_request(input_table, gx_data_src_name, row_count_limit)
             expectation_suite_name = prepare_expectation_suite(input_table)
@@ -203,7 +165,7 @@ def main():
         open_dx_data_docs(checkpoint_result)
 
     except Exception as e:
-        logging.error(f"An error occurred: {e}")
+        logger.error(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":

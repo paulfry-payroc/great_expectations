@@ -39,9 +39,16 @@ install:
 	@echo "${PURPLE}Step 2: Add Snowflake tables to GX project.${COLOUR_OFF}"
 	@${VENV_ACTIVATE} && python3 src/py/add_sf_tbls_to_gx_project.py && echo
 
+a:
+	@${VENV_ACTIVATE} && python3 src/py/v1_data_profiler.py
+
+b:
+	@${VENV_ACTIVATE} && python3 src/py/create_expectation_suite.py
+
+
 create_data_profile:
 	# TODO - WIP
-	@${VENV_ACTIVATE} && python3 src/py/gx_snowflake_data_profiler.py
+	@${VENV_ACTIVATE} && python3 src/py/v1_data_profiler.py
 	@${VENV_ACTIVATE} && python3 src/py/create_expectation_suite.py
 
 clean_gx:
