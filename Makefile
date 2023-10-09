@@ -33,18 +33,19 @@ deps:
 	@${VENV_ACTIVATE} && pip install -r requirements.txt -q
 
 install:
-	@echo "${PURPLE}Step 1: Initialise GX (Great Expectations) Project.${COLOUR_OFF}"
-	@echo && echo "${PURPLE}Initialise the GX (Great Expectations) Project.${COLOUR_OFF}"
-	@${VENV_ACTIVATE} && echo "Y" | great_expectations init --no-usage-stats > /dev/null 2>&1 && echo
-	@echo "${PURPLE}Step 2: Add Snowflake tables to GX project .${COLOUR_OFF}"
-	@${VENV_ACTIVATE} && python3 src/py/add_sf_tbls_to_gx_project.py
+	@echo && echo "${YELLOW}Called makefile target 'install'. Set up GX (Great Expectations) project.${COLOUR_OFF}" && echo
+	@echo "${PURPLE}Step 1: Initialise GX project.${COLOUR_OFF}"
+	@${VENV_ACTIVATE} && echo "Y" | great_expectations init --no-usage-stats > /dev/null 2>&1
+	@echo "${PURPLE}Step 2: Add Snowflake tables to GX project.${COLOUR_OFF}"
+	@${VENV_ACTIVATE} && python3 src/py/add_sf_tbls_to_gx_project.py && echo
 
 create_data_profile:
-	# WIP
+	# TODO - WIP
 	@${VENV_ACTIVATE} && python3 src/py/gx_snowflake_data_profiler.py
 	@${VENV_ACTIVATE} && python3 src/py/create_expectation_suite.py
 
 clean_gx:
+	# TODO - remove/tidy this up
 	@rm -rf gx/uncommitted/validations/*
 	@rm -rf gx/checkpoints/*
 	@rm -rf gx/expectations/*
