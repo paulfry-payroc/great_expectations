@@ -12,12 +12,12 @@ logger = common.get_logger()
 
 
 def remove_relative_paths_from_html(html_file_path):
-    """Removes occurrences of the string '../../../../' from the html file."""
+    """Removes occurrences of the string '../../../../../' from the html file."""
 
     # Read the content of the HTML file and modify it
     with open(html_file_path) as file:
         content = file.read()
-        modified_content = content.replace("../../../../", "")
+        modified_content = content.replace("../../../../../", "")
 
     # Write the modified content back to the HTML file
     with open(html_file_path, "w") as file:
@@ -80,7 +80,7 @@ def main():
         )
 
         for input_table in input_tables:
-            logger.info(f"table = {input_table}")
+            logger.info(f"Input table = {input_table}")
 
             pandas_dataset = snowflake_client.snowflake_query(
                 snowflake_client.setup_snowflake_connection(), input_table, row_count_limit

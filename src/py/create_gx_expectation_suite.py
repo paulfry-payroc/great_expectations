@@ -99,9 +99,6 @@ def save_expectation_suite(data_assistant_result, expectation_suite_name):
 
 def run_onboarding_data_assistant(batch_request, exclude_column_names=[]):
     """Run onboarding data assistant with the provided batch request and exclude column names."""
-
-    print(batch_request)  # TODO - remove
-
     try:
         data_assistant_result = context.assistants.onboarding.run(batch_request=batch_request)
         logger.info("Data assistant run successful.")

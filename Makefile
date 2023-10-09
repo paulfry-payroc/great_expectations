@@ -5,7 +5,8 @@ SHELL = /bin/sh
 #================================================================
 # make deps		# just install the dependencies
 # make install		# perform the end-to-end install
-# make clean		# perform a housekeeping cleanup
+# make create_data_profile		# Create the GX data prfiles
+# make clean		# clean up/restore the repo back to its' original form
 
 #=======================================================================
 # Variables
@@ -20,12 +21,11 @@ include .env
 
 VENV_ACTIVATE := . ./.venv/bin/activate
 GX_PROJECT_DIR := gx
-GX_DATA_SRC := gx_datasource_snowflake
 
 #=======================================================================
 # Targets
 #=======================================================================
-all: clean deps install test_connection
+all: clean deps install create_data_profile
 
 deps:
 	@echo && echo "${PURPLE}Create a virtualenv (.venv) with the required Python libraries installed - see requirements.txt.${COLOUR_OFF}"
@@ -37,19 +37,11 @@ install:
 	@echo "${PURPLE}Step 1: Initialise GX project.${COLOUR_OFF}"
 	@${VENV_ACTIVATE} && echo "Y" | great_expectations init --no-usage-stats > /dev/null 2>&1
 	@echo "${PURPLE}Step 2: Add Snowflake tables to GX project.${COLOUR_OFF}"
-	@${VENV_ACTIVATE} && python3 src/py/add_sf_tbls_to_gx_project.py && echo
-
-a:
-	@${VENV_ACTIVATE} && python3 src/py/v1_data_profiler.py
-
-b:
-	@${VENV_ACTIVATE} && python3 src/py/create_expectation_suite.py
-
+	@${VENV_ACTIVATE} && python3 src/py/create_gx_snowflake_table_loader.py && echo
 
 create_data_profile:
-	# TODO - WIP
-	@${VENV_ACTIVATE} && python3 src/py/v1_data_profiler.py
-	@${VENV_ACTIVATE} && python3 src/py/create_expectation_suite.py
+	@${VENV_ACTIVATE} && python3 src/py/create_gx_data_profiler.py
+	@${VENV_ACTIVATE} && python3 src/py/create_gx_expectation_suite.py
 
 clean_gx:
 	# TODO - remove/tidy this up

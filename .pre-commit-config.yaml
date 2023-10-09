@@ -10,7 +10,7 @@ repos:
       rev: v4.4.0
       hooks:
           - id: no-commit-to-branch # prevents users from pushing changes to specific (protected) branches
-            args: [--branch, develop, --branch, main, --pattern, release/.*]
+            args: [--branch, develop, --branch, main]
             name: Git checks - committed to protected Git branch?
           - id: check-merge-conflict # checks for files that contain merge conflict strings.
             name: Git checks - any merge conflicts?
