@@ -28,26 +28,19 @@ GX_DATA_SRC := gx_datasource_snowflake
 all: clean deps install test_connection
 
 deps:
-	@echo && echo "${YELLOW}Called makefile target: 'deps'. Generate VENV with required pip packages.${COLOUR_OFF}" && echo
-	@echo "${PURPLE}Step 1: Create a virtualenv (.venv) with the required Python libraries - see requirements.txt.${COLOUR_OFF}"
+	@echo && echo "${PURPLE}Create a virtualenv (.venv) with the required Python libraries installed - see requirements.txt.${COLOUR_OFF}"
 	@python3 -m venv .venv && chmod +x ./.venv/bin/activate
 	@${VENV_ACTIVATE} && pip install -r requirements.txt -q
-	@echo "${PURPLE}Step 2: Create Great Expectations Project directory.${COLOUR_OFF}"
-	@${VENV_ACTIVATE} && echo "Y" | great_expectations init --no-usage-stats > /dev/null 2>&1
 
 install:
-	# TODO - wip
-	@echo && echo "${YELLOW}Called makefile target: 'install'. Run the setup and install targets.${COLOUR_OFF}" && echo
-	@${VENV_ACTIVATE} && python3 src/py/create_data_source.py
-
-test_connection:
-	@echo && echo "${YELLOW}Called makefile target 'test_connection'. Test the GX data source connection.${COLOUR_OFF}" && echo
-	@${VENV_ACTIVATE} && python3 src/py/test_snowflake_connection.py
-
-a:
-	@${VENV_ACTIVATE} && python3 src/py/create_expectation_suite_v1.py
+	@echo "${PURPLE}Step 1: Initialise GX (Great Expectations) Project.${COLOUR_OFF}"
+	@echo && echo "${PURPLE}Initialise the GX (Great Expectations) Project.${COLOUR_OFF}"
+	@${VENV_ACTIVATE} && echo "Y" | great_expectations init --no-usage-stats > /dev/null 2>&1 && echo
+	@echo "${PURPLE}Step 2: Add Snowflake tables to GX project .${COLOUR_OFF}"
+	@${VENV_ACTIVATE} && python3 src/py/add_sf_tbls_to_gx_project.py
 
 create_data_profile:
+	# WIP
 	@${VENV_ACTIVATE} && python3 src/py/gx_snowflake_data_profiler.py
 	@${VENV_ACTIVATE} && python3 src/py/create_expectation_suite.py
 
@@ -58,7 +51,7 @@ clean_gx:
 	@rm -rf gx/uncommitted/data_docs/local_site/*
 
 clean:
-	@echo && echo "${YELLOW}Called makefile target 'clean'. Purpose: restore the repo to it's initial state (i.e., remove all generated/created files).${COLOUR_OFF}" && echo
+	@echo && echo "${YELLOW}Called makefile target 'clean'. Restore the repo to it's initial state - i.e., remove all generated files.${COLOUR_OFF}" && echo
 	@echo "${PURPLE}* Delete the virtualenv directory & delete the generated .env file${COLOUR_OFF}"
 	@rm -rf .venv
 	@echo "${PURPLE}* Delete the generated GX (greate expectations) directory${COLOUR_OFF}"
@@ -66,9 +59,5 @@ clean:
 
 # Phony targets
 .PHONY: all deps install test clean
-
 # .PHONY tells Make that these targets don't represent files
 # This prevents conflicts with any files named "all" or "clean"
-
-abc:
-	@${VENV_ACTIVATE} && python3 src/py/v1_multi_batch_request.py

@@ -1,10 +1,10 @@
 import logging
-import os
 import re
 import warnings
 from datetime import datetime
 
 import great_expectations as gx
+import yaml
 from dotenv import load_dotenv
 
 load_dotenv()  # Load environment variables from .env file
@@ -102,11 +102,11 @@ def save_expectation_suite(data_assistant_result, expectation_suite_name):
 
 def run_onboarding_data_assistant(batch_request, exclude_column_names=[]):
     """Run onboarding data assistant with the provided batch request and exclude column names."""
+
+    print(batch_request)  # TODO - remove
+
     try:
-        data_assistant_result = context.assistants.onboarding.run(
-            batch_request=batch_request,
-            exclude_column_names=exclude_column_names,
-        )
+        data_assistant_result = context.assistants.onboarding.run(batch_request=batch_request)
         logging.info("Data assistant run successful.")
         return data_assistant_result
     except Exception as e:
@@ -114,10 +114,10 @@ def run_onboarding_data_assistant(batch_request, exclude_column_names=[]):
         raise
 
 
-def prepare_expectation_suite():
+def prepare_expectation_suite(input_table):
     """Prepare and create a new expectation suite with the current date as the name."""
     current_date_str = datetime.now().strftime("%Y%m%d")
-    expectation_suite_name = f"{current_date_str}_expectation_suite"
+    expectation_suite_name = f"{current_date_str}_{input_table}"
 
     try:
         context.create_expectation_suite(expectation_suite_name, overwrite_existing=True)
@@ -128,43 +128,77 @@ def prepare_expectation_suite():
     return expectation_suite_name
 
 
-def prepare_batch_request(env_vars):
+def prepare_batch_request(input_table, gx_data_src_name, row_count_limit):
     """Prepare a batch request for the given data asset name."""
-    batch_request = {
-        "datasource_name": env_vars["GX_DATA_SRC"],
-        "data_connector_name": "default_configured_data_connector_name",
-        "data_asset_name": env_vars["INPUT_TABLE"],
-        "limit": int(env_vars["ROW_COUNT_LIMIT"]),
-    }
+    # Retrieve data asset
+    my_asset = context.get_datasource(gx_data_src_name).get_asset(input_table)
+
+    """An options dictionary can be used to limit the Batches returned by a Batch Request.
+    # Omitting the options dictionary will result in all available Batches being returned."""
+    # print(my_asset.batch_request_options)
+
+    # build batch request
+    batch_request = my_asset.build_batch_request()
+
+    batches = my_asset.get_batch_list_from_batch_request(batch_request)
+
+    for batch in batches:
+        print(batch.batch_spec)
+
     return batch_request
 
 
-def validate_inputs():
-    """Validate the presence of required environment variables and return them as a dictionary."""
+def load_config_from_yaml():
+    # Open and read YAML data from a file
+    with open("config.yaml") as file:
+        # Load YAML data into a Python dictionary
+        data = yaml.safe_load(file)
 
-    # List of environment variables to validate
-    env_vars_to_validate = ["GX_DATA_SRC", "INPUT_TABLE", "ROW_COUNT_LIMIT"]
+    input_tables = data.get("input_tables")
+    other_params = data.get("other_params", {})
 
-    env_vars = {}
-    for env_var in env_vars_to_validate:
-        value = os.getenv(env_var)
-        if not value:
-            raise ValueError(f"{env_var} environment variable is not set.")
-        else:
-            env_vars[env_var] = value
-            logger.debug(f"env_var '{env_var}' = {value}")
-    return env_vars
+    # Validate if "input_tables" key is present, is a list, and is not empty
+    if (
+        input_tables is None
+        or not isinstance(input_tables, list)
+        or not input_tables
+        or all(not item for item in input_tables)
+    ):
+        raise ValueError("Invalid or empty 'input_tables' in the YAML file.")
+
+    # Validate if the required keys in other_params are present
+    required_other_params_keys = ["gx_data_src_name", "row_count_limit"]
+    for key in required_other_params_keys:
+        if key is None or key not in other_params or not other_params[key]:
+            raise ValueError(f"Invalid or missing key '{key}' in other_params.")
+
+    input_tables_lowercase = [table.lower() for table in input_tables]
+
+    logger.debug(input_tables_lowercase)
+    logger.debug(other_params)
+
+    return input_tables_lowercase, other_params
 
 
 def main():
     """Main function to execute the script."""
     try:
-        env_vars = validate_inputs()
-        batch_request = prepare_batch_request(env_vars)
-        expectation_suite_name = prepare_expectation_suite()
-        data_assistant_result = run_onboarding_data_assistant(batch_request)
-        save_expectation_suite(data_assistant_result, expectation_suite_name)
-        checkpoint_result = create_and_run_checkpoint(batch_request, expectation_suite_name)
+        input_tables, other_params = load_config_from_yaml()
+        gx_data_src_name = other_params["gx_data_src_name"]
+        row_count_limit = other_params["row_count_limit"]
+
+        logger.debug(f"input tables = {input_tables}")
+        logger.debug(f"gx_data_src_name = {gx_data_src_name}")
+        logger.debug(f"row_count_limit = {row_count_limit}")
+
+        for input_table in input_tables:
+            logger.info(f"gx_data_src_name = {gx_data_src_name}")
+            logger.info(f"table = {input_table}")
+            batch_request = prepare_batch_request(input_table, gx_data_src_name, row_count_limit)
+            expectation_suite_name = prepare_expectation_suite(input_table)
+            data_assistant_result = run_onboarding_data_assistant(batch_request)
+            save_expectation_suite(data_assistant_result, expectation_suite_name)
+            checkpoint_result = create_and_run_checkpoint(batch_request, expectation_suite_name)
         modify_html_file("gx/uncommitted/data_docs/local_site/index.html")
         open_dx_data_docs(checkpoint_result)
 
