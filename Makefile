@@ -42,8 +42,13 @@ install:
 profile_input_tables:
 	@echo && echo "${YELLOW}Called makefile target 'profile_input_tables'. Perform data profiling on the input tables provided.${COLOUR_OFF}" && echo
 	@${VENV_ACTIVATE} && python3 src/py/create_gx_data_profiler.py
-	@cp src/templates/profiling_results.html gx/uncommitted/data_docs/local_site/profiling_results.html
 	@${VENV_ACTIVATE} && python3 src/py/create_gx_expectation_suite.py
+	# below is wip
+	@#${VENV_ACTIVATE} && python3 src/py/1.py
+
+b:
+	# TODO - remove
+	python3 src/py/update_gx_data_docs.py
 
 # Validation check target
 validate_env_vars:

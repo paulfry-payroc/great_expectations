@@ -157,7 +157,7 @@ def main():
             data_assistant_result = run_onboarding_data_assistant(batch_request)
             save_expectation_suite(data_assistant_result, expectation_suite_name)
             checkpoint_result = create_and_run_checkpoint(batch_request, expectation_suite_name)
-        modify_html_file("gx/uncommitted/data_docs/local_site/index.html")
+        # modify_html_file("gx/uncommitted/data_docs/local_site/index.html")
         open_dx_data_docs(checkpoint_result)
 
     except Exception as e:
