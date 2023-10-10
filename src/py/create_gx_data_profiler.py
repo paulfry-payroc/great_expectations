@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 import common
 import snowflake_client
@@ -56,11 +57,12 @@ def generate_data_profiling_html(pandas_dataset, input_table):
     DATA_DOCS_DIR = "gx/uncommitted/data_docs/local_site/"
     PROFILING_RESULTS_DIR = os.path.join(DATA_DOCS_DIR, "profiling_results")
     EXPECTATION_SUITE_DIR = os.path.join(DATA_DOCS_DIR, "expectation_suite")
+    CURRENT_DATE_STR = datetime.now().strftime("%Y%m%d")
 
     # Define file information as tuples (directory, filename, content)
     files_to_process = [
-        (PROFILING_RESULTS_DIR, f"data_profile_{input_table}.html", profiling_result_html),
-        (EXPECTATION_SUITE_DIR, f"expectation_suite_{input_table}.html", expectation_based_on_profiling_html),
+        (PROFILING_RESULTS_DIR, f"{CURRENT_DATE_STR}_{input_table}.html", profiling_result_html),
+        (EXPECTATION_SUITE_DIR, f"{CURRENT_DATE_STR}_{input_table}.html", expectation_based_on_profiling_html),
     ]
 
     # loop through 'files_to_process' to call the same functions below on each
