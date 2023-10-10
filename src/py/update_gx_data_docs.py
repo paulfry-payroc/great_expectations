@@ -1,16 +1,22 @@
 import logging
 import os
 import re
+import shutil
 import sys
 from datetime import datetime
 
 import common
+import great_expectations as gx
 from bs4 import BeautifulSoup
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 
 # Set up a specific logger with our desired output level
 logger = common.get_logger(log_level=logging.DEBUG)
+# logger = common.get_logger()
+
+# Create a GX context
+context = gx.get_context()
 
 # ---------------------
 # Constants
@@ -25,10 +31,62 @@ PYTHON_SCRIPTS_DIR = os.path.join(PROJECT_DIR, "src", "py")
 # ---------------------
 # Other
 # ---------------------
-GX_DATA_DOCS_HTML_FILE = "gx/uncommitted/data_docs/local_site/index.html"
+GX_DATA_DOCS_DIR = "gx/uncommitted/data_docs/local_site/"
+GX_DATA_DOCS_HTML_FILE = os.path.join(GX_DATA_DOCS_DIR, "index.html")
+HTML_JINJA_TEMPLATE = os.path.join(TEMPLATES_DIR, "index.html.j2")
 
 
-def main():
+def modify_html_file(file_path):
+    """Modifies the specified HTML file content, replacing the specified text."""
+
+    # Read the content of the HTML file
+    with open(file_path) as file:
+        content = file.read()
+
+    # Define the pattern to be found using a regular expression
+    old_text_pattern = r'<li class="nav-item">\s*<a\s*aria-controls="Expectation-Suites"\s*aria-selected="false"\s*class="nav-link"\s*data-toggle="tab"\s*href="#Expectation-Suites"\s*id="Expectation-Suites-tab"\s*role="tab">\s*Expectation Suites\s*</a>\s*</li>'  # noqa
+
+    # Specify the text to be replaced and its replacement
+    # old_text = (
+    #     '<li class="nav-item">\n'
+    #     '    <a class="nav-link" id="Expectation-Suites-tab" data-toggle="tab" href="#Expectation-Suites"\n'
+    #     '      role="tab" aria-selected="false" aria-controls="Expectation-Suites">\n'
+    #     "      Expectation Suites\n"
+    #     "    </a>\n"
+    #     "  </li>"
+    # )
+
+    # Define the replacement text
+    new_text = (
+        '<li class="nav-item">\n'
+        '    <a class="nav-link" id="Expectation-Suites-tab" data-toggle="tab" href="#Expectation-Suites"\n'
+        '      role="tab" aria-selected="false" aria-controls="Expectation-Suites">\n'
+        "      Expectation Suites\n"
+        "    </a>\n"
+        "</li>"
+        "\n"
+        '<li class="nav-item">\n'
+        '    <a class="nav-link" id="Profiling-Results-tab" data-toggle="tab" href="#Profiling-Results"\n'
+        '      role="tab" aria-selected="false" aria-controls="Profiling-Results">\n'
+        "      Profiling Results\n"
+        "    </a>\n"
+        "  </li>\n"
+    )
+
+    # Use re.search to check if the pattern exists in the content
+    if re.search(old_text_pattern, content, re.DOTALL):
+        # Use re.sub to replace the old text with the new text in the content
+        modified_content = re.sub(old_text_pattern, new_text, content)
+
+        # Write the modified content back to the file
+        with open(file_path, "w") as file:
+            file.write(modified_content)
+        print(f"Text substitution successful in {file_path}")
+    else:
+        print(f"No substitution made in {file_path}")
+
+
+def add_data_profiling_content():
     try:
         input_tables, other_params = common.load_config_from_yaml()
         logger.debug(f"input tables = {input_tables}")
@@ -36,14 +94,12 @@ def main():
         jinja_template = setup_jinja_template("index.html.j2")
         template_path = os.path.join(TEMPLATES_DIR, "index.html.j2")
 
-        target_dir = os.path.join(PROJECT_DIR, "gx", "uncommitted", "data_docs", "local_site")
-
-        # # Validate the Jinja template
+        # Validate the Jinja template
         if not os.path.exists(template_path):
             logger.error(f"Error: Jinja template '{jinja_template}' not found.")
             sys.exit(1)
 
-        with open(os.path.join(target_dir, "abc.html"), "w") as op_file:
+        with open(GX_DATA_DOCS_HTML_FILE, "w") as op_file:
             op_file.write(jinja_template.render(input_tables=input_tables, current_data_str=CURRENT_DATE_STR))
 
     except Exception as e:
@@ -87,10 +143,10 @@ def prettify_html(input_file):
         sys.exit()
 
 
-def find_and_replace_html_code(input_file):
+def find_and_replace_html_code():
     try:
         # Prettify the HTML content and get the prettified HTML
-        prettified_html = prettify_html(input_file)
+        prettified_html = prettify_html(GX_DATA_DOCS_HTML_FILE)
 
         # -------------------------------------
         # String pattern declarations
@@ -120,7 +176,7 @@ def find_and_replace_html_code(input_file):
         if html_check_match:
             logger.debug("SUCCESS: Subsequent HTML elements found in the file.")
         else:
-            logger.debug("ERROR: Subsequent HTML elements not found in the file.")
+            logger.error("ERROR: Subsequent HTML elements not found in the file.")
             sys.exit()
 
         if js_match:
@@ -140,14 +196,21 @@ def find_and_replace_html_code(input_file):
 
             # Perform find and replace operation
             updated_html_file = re.sub(combined_html_pattern, target_html, prettified_html, flags=re.DOTALL)
-            updated_html_file = re.sub(combined_html_pattern, target_html, prettified_html, flags=re.DOTALL)
 
-            # Save the modified HTML content to the input file
-            with open(input_file, "w", encoding="utf-8") as file:
-                file.write(updated_html_file)
+            # we want to write 2 versions of the newly updated file out:
+            # index.html & index.html.j2 - as we need this for jinja-rendering in the function 'add_data_profiling_content()'
+            html_op_files = [GX_DATA_DOCS_HTML_FILE, HTML_JINJA_TEMPLATE]
 
-            # Parse the updated HTML content using BeautifulSoup for final consistent formatting
-            prettify_html(input_file)
+            for html_file in html_op_files:
+                try:
+                    # Save the modified HTML content to the input file
+                    with open(html_file, "w") as file:
+                        file.write(updated_html_file)
+
+                    # Parse the updated HTML content using BeautifulSoup for final consistent formatting
+                    prettify_html(html_file)
+                except Exception as e:
+                    print(f"Error occurred while writing {html_file}: {e}")
 
             # Output success message
             logger.debug("SUCCESS: HTML processing and pattern replacement completed.")
@@ -161,5 +224,9 @@ def find_and_replace_html_code(input_file):
 
 
 if __name__ == "__main__":
-    # main()
-    find_and_replace_html_code(GX_DATA_DOCS_HTML_FILE)
+    # Step 1: Create a backup of the original index.html file
+    shutil.copyfile(GX_DATA_DOCS_HTML_FILE, os.path.join(GX_DATA_DOCS_DIR, "bkp_index.html"))
+    find_and_replace_html_code()
+    add_data_profiling_content()
+    modify_html_file(GX_DATA_DOCS_HTML_FILE)
+    context.open_data_docs()

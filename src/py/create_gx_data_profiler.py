@@ -14,12 +14,12 @@ logger = common.get_logger(log_level=logging.INFO)
 
 
 def remove_relative_paths_from_html(html_file_path):
-    """Removes occurrences of the string '../../../../../' from the html file."""
+    """Removes occurrences of the string '../../../../' from the html file."""
 
     # Read the content of the HTML file and modify it
     with open(html_file_path) as file:
         content = file.read()
-        modified_content = content.replace("../../../../../", "")
+        modified_content = content.replace("../../../../", "../")
 
     # Write the modified content back to the HTML file
     with open(html_file_path, "w") as file:

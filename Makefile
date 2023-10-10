@@ -5,7 +5,7 @@ SHELL = /bin/sh
 #================================================================
 # make deps		# just install the dependencies
 # make install		# perform the end-to-end install
-# make profile_input_tables		# Create the GX data prfiles
+# make create_gx_profiler_and_expectation_suite		# Create the GX data profiles & expectation suite
 # make clean		# clean up/restore the repo back to its' original form
 #=======================================================================
 # Variables
@@ -21,7 +21,7 @@ GX_PROJECT_DIR := gx
 #=======================================================================
 # Targets
 #=======================================================================
-all: clean deps install profile_input_tables
+all: clean deps install create_gx_profiler_and_expectation_suite
 
 deps:
 	@echo && echo "${PURPLE}Create a virtualenv (.venv) with the required Python libraries installed - see requirements.txt.${COLOUR_OFF}"
@@ -43,10 +43,6 @@ create_gx_profiler_and_expectation_suite:
 	@echo && echo "${YELLOW}Called makefile target 'create_gx_profiler_and_expectation_suite'.${COLOUR_OFF}" && echo
 	@${VENV_ACTIVATE} && python3 src/py/create_gx_data_profiler.py
 	@${VENV_ACTIVATE} && python3 src/py/create_gx_expectation_suite.py
-	# below is wip
-	@#${VENV_ACTIVATE} && python3 src/py/update_gx_data_docs.py
-
-a:
 	@${VENV_ACTIVATE} && python3 src/py/update_gx_data_docs.py
 
 # Validation check target

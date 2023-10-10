@@ -21,7 +21,6 @@ context = gx.get_context()
 def open_dx_data_docs():
     """Open the data documentation for the first validation result in the given checkpoint result."""
     context.build_data_docs()
-    context.open_data_docs()
 
 
 def modify_html_file(file_path):
@@ -157,8 +156,7 @@ def main():
             data_assistant_result = run_onboarding_data_assistant(batch_request)
             save_expectation_suite(data_assistant_result, expectation_suite_name)
             create_and_run_checkpoint(batch_request, expectation_suite_name)
-        # modify_html_file("gx/uncommitted/data_docs/local_site/index.html")
-        open_dx_data_docs()
+        context.build_data_docs()
 
     except Exception as e:
         logger.error(f"An error occurred: {e}")
