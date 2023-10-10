@@ -1,10 +1,11 @@
+import logging
 import warnings
 
 import common
 import great_expectations as gx
 
 # Set up a specific logger with our desired output level
-logger = common.get_logger()
+logger = common.get_logger(log_level=logging.INFO)
 
 # Suppress DeprecationWarning for create_expectation_suite
 warnings.filterwarnings("ignore", category=DeprecationWarning)

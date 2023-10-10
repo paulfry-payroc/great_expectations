@@ -1,3 +1,4 @@
+import logging
 import os
 from datetime import datetime
 
@@ -9,7 +10,7 @@ from great_expectations.render.renderer import ProfilingResultsPageRenderer
 from great_expectations.render.view import DefaultJinjaPageView
 
 # Set up a specific logger with our desired output level
-logger = common.get_logger()
+logger = common.get_logger(log_level=logging.INFO)
 
 
 def remove_relative_paths_from_html(html_file_path):
@@ -82,7 +83,7 @@ def main():
         )
 
         for input_table in input_tables:
-            logger.info(f"Input table = {input_table}")
+            logger.debug(f"Input table = {input_table}")
 
             pandas_dataset = snowflake_client.snowflake_query(
                 snowflake_client.setup_snowflake_connection(), input_table, row_count_limit

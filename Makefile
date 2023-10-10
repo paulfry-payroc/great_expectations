@@ -36,19 +36,18 @@ install:
 	@echo && echo "${YELLOW}Called makefile target 'install'. Set up GX (Great Expectations) project.${COLOUR_OFF}" && echo
 	@echo "${PURPLE}Step 1: Initialise GX project.${COLOUR_OFF}"
 	@${VENV_ACTIVATE} && echo "Y" | great_expectations init --no-usage-stats > /dev/null 2>&1
-	@echo "${PURPLE}Step 2: Add Snowflake tables to GX project.${COLOUR_OFF}" && echo
-	@${VENV_ACTIVATE} && python3 src/py/create_gx_snowflake_table_loader.py
+	@echo "${PURPLE}Step 2: Add Snowflake tables to GX project.${COLOUR_OFF}"
+	@${VENV_ACTIVATE} && python3 src/py/create_gx_snowflake_table_loader.py && echo
 
-profile_input_tables:
-	@echo && echo "${YELLOW}Called makefile target 'profile_input_tables'. Perform data profiling on the input tables provided.${COLOUR_OFF}" && echo
+create_gx_profiler_and_expectation_suite:
+	@echo && echo "${YELLOW}Called makefile target 'create_gx_profiler_and_expectation_suite'.${COLOUR_OFF}" && echo
 	@${VENV_ACTIVATE} && python3 src/py/create_gx_data_profiler.py
 	@${VENV_ACTIVATE} && python3 src/py/create_gx_expectation_suite.py
 	# below is wip
-	@#${VENV_ACTIVATE} && python3 src/py/1.py
+	@#${VENV_ACTIVATE} && python3 src/py/update_gx_data_docs.py
 
-b:
-	# TODO - remove
-	python3 src/py/update_gx_data_docs.py
+a:
+	@${VENV_ACTIVATE} && python3 src/py/update_gx_data_docs.py
 
 # Validation check target
 validate_env_vars:

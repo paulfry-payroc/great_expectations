@@ -18,10 +18,10 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 context = gx.get_context()
 
 
-def open_dx_data_docs(checkpoint_result):
+def open_dx_data_docs():
     """Open the data documentation for the first validation result in the given checkpoint result."""
-    validation_result_identifier = checkpoint_result.list_validation_result_identifiers()[0]
-    context.open_data_docs(resource_identifier=validation_result_identifier)
+    context.build_data_docs()
+    context.open_data_docs()
 
 
 def modify_html_file(file_path):
@@ -115,7 +115,7 @@ def prepare_expectation_suite(input_table):
 
     try:
         context.create_expectation_suite(expectation_suite_name, overwrite_existing=True)
-        logger.info(f"Expectation suite '{expectation_suite_name}' created successfully.")
+        logger.info(f"\nGX expectation suite '{expectation_suite_name}' created successfully.")
     except Exception as e:
         logger.error(f"Error creating expectation suite: {e}")
         raise
@@ -151,14 +151,14 @@ def main():
         )
 
         for input_table in input_tables:
-            logger.debug(f"table = {input_table}")
+            logger.info(f"table = {input_table}")
             batch_request = prepare_batch_request(input_table, gx_data_src_name, row_count_limit)
             expectation_suite_name = prepare_expectation_suite(input_table)
             data_assistant_result = run_onboarding_data_assistant(batch_request)
             save_expectation_suite(data_assistant_result, expectation_suite_name)
-            checkpoint_result = create_and_run_checkpoint(batch_request, expectation_suite_name)
+            create_and_run_checkpoint(batch_request, expectation_suite_name)
         # modify_html_file("gx/uncommitted/data_docs/local_site/index.html")
-        open_dx_data_docs(checkpoint_result)
+        open_dx_data_docs()
 
     except Exception as e:
         logger.error(f"An error occurred: {e}")
