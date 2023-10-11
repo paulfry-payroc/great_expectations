@@ -4,7 +4,7 @@ import warnings
 import common
 import great_expectations as gx
 
-# Set up a specific logger with our desired output level
+# Set up logging
 logger = common.get_logger(log_level=logging.INFO)
 
 # Suppress DeprecationWarning for create_expectation_suite
@@ -13,10 +13,11 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 def get_or_create_datasource(context, gx_data_src_name):
     """Get an existing datasource or create a new one if not exists."""
-
     try:
+        # Attempt to get an existing datasource with the given name
         return context.get_datasource(gx_data_src_name)
     except ValueError:
+        # If the datasource doesn't exist, create a new one with the provided name
         return context.sources.add_snowflake(
             name=gx_data_src_name, connection_string=common.create_snowflake_connection_string()
         )
@@ -41,6 +42,7 @@ def add_snowflake_tables_to_gx():
         for table in input_tables:
             try:
                 datasource = get_or_create_datasource(context, gx_data_src_name)
+                # Add table as a query asset with row_count_limit
                 datasource.add_query_asset(name=table, query=f"SELECT * FROM {table} LIMIT {row_count_limit}")
                 logger.debug(f"Table '{table}' added successfully.")
             except Exception as e:

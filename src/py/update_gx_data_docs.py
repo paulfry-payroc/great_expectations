@@ -1,4 +1,3 @@
-import logging
 import os
 import re
 import shutil
@@ -11,9 +10,9 @@ from bs4 import BeautifulSoup
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 
-# Set up a specific logger with our desired output level
-logger = common.get_logger(log_level=logging.DEBUG)
-# logger = common.get_logger()
+# Set up logging
+logger = common.get_logger()
+# logger = common.get_logger(log_level=logging.DEBUG)
 
 # Create a GX context
 context = gx.get_context()
@@ -81,9 +80,10 @@ def modify_html_file(file_path):
         # Write the modified content back to the file
         with open(file_path, "w") as file:
             file.write(modified_content)
-        print(f"Text substitution successful in {file_path}")
+        logger.debug(f"Text substitution successful in {file_path}")
     else:
-        print(f"No substitution made in {file_path}")
+        logger.error(f"No substitution made in {file_path}")
+        sys.exit(1)
 
 
 def add_data_profiling_content():
@@ -210,7 +210,8 @@ def find_and_replace_html_code():
                     # Parse the updated HTML content using BeautifulSoup for final consistent formatting
                     prettify_html(html_file)
                 except Exception as e:
-                    print(f"Error occurred while writing {html_file}: {e}")
+                    logger.error(f"Error occurred while writing {html_file}: {e}")
+                    sys.exit()
 
             # Output success message
             logger.debug("SUCCESS: HTML processing and pattern replacement completed.")

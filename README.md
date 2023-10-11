@@ -38,7 +38,7 @@ Before you begin, ensure you have the following in place:
 
     </details>
 
-2. **List input tables in `config.yaml`**
+2. **Enter list of input tables in `config.yaml`**
 
     <details>
 

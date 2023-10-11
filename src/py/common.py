@@ -67,6 +67,7 @@ def load_config_from_yaml(file_path="config.yaml"):
 def validate_environment_variables():
     """Validates required Snowflake connection environment variables."""
 
+    # required env vars
     REQUIRED_ENV_VARS = [
         "SNOWFLAKE_ACCOUNT",
         "SNOWFLAKE_USER",
@@ -87,7 +88,7 @@ def create_snowflake_connection_string():
     # validate that the env vars exist
     validate_environment_variables()
 
-    # Snowflake connection parameters
+    # snowflake connection parameters
     SNOWFLAKE_ACCOUNT = os.getenv("SNOWFLAKE_ACCOUNT")
     SNOWFLAKE_USER = os.getenv("SNOWFLAKE_USER")
     SNOWFLAKE_PASSWORD = os.getenv("SNOWFLAKE_PASSWORD")
@@ -96,6 +97,7 @@ def create_snowflake_connection_string():
     SNOWFLAKE_WAREHOUSE = os.getenv("SNOWFLAKE_WAREHOUSE")
     SNOWFLAKE_ROLE = os.getenv("SNOWFLAKE_ROLE")
 
+    # create concatenated connection string
     my_connection_string = f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/{SNOWFLAKE_DATABASE}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"  # noqa
 
     return my_connection_string

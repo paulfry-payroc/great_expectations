@@ -9,7 +9,7 @@ from great_expectations.render.renderer import ExpectationSuitePageRenderer
 from great_expectations.render.renderer import ProfilingResultsPageRenderer
 from great_expectations.render.view import DefaultJinjaPageView
 
-# Set up a specific logger with our desired output level
+# Set up logging
 logger = common.get_logger(log_level=logging.INFO)
 
 
@@ -71,6 +71,9 @@ def generate_data_profiling_html(pandas_dataset, input_table):
         create_directory(directory)  # Create directories if they don't exist
         write_html_file(directory, filename, content)  # Write HTML content to files
         remove_relative_paths_from_html(os.path.join(directory, filename))  # Remove relative file paths
+
+    logger.info(f"Created data profile for: {input_table}")
+
     return
 
 
