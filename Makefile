@@ -13,7 +13,7 @@ SHELL = /bin/sh
 .EXPORT_ALL_VARIABLES:
 
 # load variables from separate file
-include config.mk
+include src/make/config.mk
 
 VENV_ACTIVATE := . ./.venv/bin/activate
 
@@ -30,9 +30,6 @@ deps:
 	@python3 -m venv --help >/dev/null 2>&1 || (echo "Python venv module not found"; exit 1)
 	@test -f requirements.txt || (echo && echo "${RED}Error: requirements.txt file not found.${COLOUR_OFF}" && echo; exit 1)
 	@${VENV_ACTIVATE} && pip install -r requirements.txt -q
-
-abc: validate_env_vars
-	@#echo "test"
 
 install: validate_env_vars
 	@echo && echo "${YELLOW}Called makefile target 'install'. Set up GX (Great Expectations) project.${COLOUR_OFF}" && echo
