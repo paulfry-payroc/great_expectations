@@ -1,49 +1,82 @@
 #!/bin/bash
+# shellcheck disable=all
 
 #=======================================================================
 # Variables
 #=======================================================================
+source .env # Load environment variables from .env file
+source src/sh/common_script_vars.sh # fetch common shell script vars
 
-# setup colour formatting
-RED='\033[0;31m'
-YELLOW='\033[0;33m'
-GREEN='\033[0;32m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
-COLOUR_OFF='\033[0m' # Text Reset
+# Path to the config.yaml file and .env file
+CONFIG_FILE="$1"
+ENV_FILE="$2"
 
-# Load environment variables from .env file
-source .env
+ENV_VARS_TO_VALIDATE=("SNOWFLAKE_ACCOUNT" "SNOWFLAKE_USER" "SNOWFLAKE_PASSWORD" "SNOWFLAKE_DATABASE" "SNOWFLAKE_SCHEMA" "SNOWFLAKE_WAREHOUSE" "SNOWFLAKE_ROLE")
+#=======================================================================
+# Functions
+#=======================================================================
 
-env_vars_to_validate=("SNOWFLAKE_ACCOUNT" "SNOWFLAKE_USER" "SNOWFLAKE_PASSWORD" "SNOWFLAKE_DATABASE" "SNOWFLAKE_SCHEMA" "SNOWFLAKE_WAREHOUSE" "SNOWFLAKE_ROLE")
+# Function to validate the existance of an .env file
+verify_env_file_exists() {
+    if [ ! -f "$ENV_FILE" ]; then
+        echo -e "${RED}Error: .env file not found.${COLOUR_OFF}"
+        exit 1
+    fi
+}
+
+# Function to verify that the required env vars have been populated in the .env file
+validate_env_file() {
+    for var in "${ENV_VARS_TO_VALIDATE[@]}"; do
+        if [ -z "${!var}" ]; then
+            echo && echo -e "${RED}Error: .env file error - '$var' is not populated in .env file.${COLOUR_OFF}" && echo
+            exit 1
+        fi
+    done
+}
+
+# Function to verify that the required values in config.yaml have been populated
+validate_config_yaml() {
+    input_tables=$(sed -n -e '/^\s*- / { s/^\s*- //p }' "${CONFIG_FILE}")
+    row_count_limit=$(sed -n -e 's/^\s*row_count_limit:\s*//p' "${CONFIG_FILE}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    gx_data_src_name=$(sed -n -e 's/^\s*gx_data_src_name:\s*//p' "${CONFIG_FILE}")
+
+    # Debugging - uncomment if needed
+    # display_extracted_values
+
+    VALIDATED_VARIABLES=("input_tables" "row_count_limit" "gx_data_src_name")
+    for var in "${VALIDATED_VARIABLES[@]}"; do
+        value="${!var}"
+        if [ -z "$value" ]; then
+            echo -e "${RED}Error: config.yaml error - '$var' must not be empty in config.yaml.${COLOUR_OFF}" && echo
+            exit 1
+        fi
+    done
+}
+
+# Function to echo extracted values
+display_extracted_values() {
+    config_file_vars=("input_tables" "row_count_limit" "gx_data_src_name")
+
+    echo "Debuggging: extracted values from ${CONFIG_FILE}:" && echo
+    for var in "${config_file_vars[@]}"; do
+        value="${!var}"
+        echo "$var: '$value'"
+    done
+}
+
 
 #=======================================================================
 # Main script logic
 #=======================================================================
-# Validate .env file
-echo "Validating .env file."
 
-for var in "${env_vars_to_validate[@]}"; do
-    if [ -z "${!var}" ]; then
-        echo "Error: $var is not defined in .env file"
-        exit 1
-    fi
-done
+# Step 1: Verify .env file exists
+echo -e "${PURPLE}* Check if .env file exists.${COLOUR_OFF}"
+verify_env_file_exists
 
-# Validate input_tables, row_count_limit, and gx_data_src_name in config.yaml
-echo "Validating input_tables, row_count_limit, and gx_data_src_name in config.yaml..."
-input_tables=$(grep -E '^input_tables:' config.yaml | sed 's/input_tables:\s*//')
-row_count_limit=$(grep -E '^row_count_limit:' config.yaml | sed 's/row_count_limit:\s*//')
-gx_data_src_name=$(grep -E '^gx_data_src_name:' config.yaml | sed 's/gx_data_src_name:\s*//')
+# Step 2: validate .env file
+echo -e "${PURPLE}* Validate contents of .env file.${COLOUR_OFF}"
+validate_env_file
 
-if [ -z "$input_tables" ]; then
-    echo "Error: input_tables is not defined in config.yaml or the list is empty"
-    exit 1
-fi
-
-if [ -z "$row_count_limit" ] || [ -z "$gx_data_src_name" ]; then
-    echo "Error: row_count_limit and gx_data_src_name must be defined in config.yaml"
-    exit 1
-fi
-
-echo "Validation successful."
+# Step 2: Validate config.yaml
+echo -e "${PURPLE}* Validate contents of config.yaml.${COLOUR_OFF}" && echo
+validate_config_yaml
