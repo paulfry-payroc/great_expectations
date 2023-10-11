@@ -1,5 +1,6 @@
 import logging
 import os
+import warnings
 from datetime import datetime
 
 import common
@@ -11,6 +12,11 @@ from great_expectations.render.view import DefaultJinjaPageView
 
 # Set up logging
 logger = common.get_logger(log_level=logging.INFO)
+
+
+# Suppress DeprecationWarning for create_expectation_suite
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.simplefilter(action="ignore", category=FutureWarning)
 
 
 def remove_relative_paths_from_html(html_file_path):
@@ -86,7 +92,7 @@ def main():
         )
 
         for input_table in input_tables:
-            logger.debug(f"Input table = {input_table}")
+            logger.info(f"Input table = {input_table}")
 
             pandas_dataset = snowflake_client.snowflake_query(
                 snowflake_client.setup_snowflake_connection(), input_table, row_count_limit

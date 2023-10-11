@@ -10,8 +10,7 @@ from bs4 import BeautifulSoup
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 
-# Set up logging
-logger = common.get_logger()
+logger = common.get_logger()  # Set up logging
 # logger = common.get_logger(log_level=logging.DEBUG)
 
 # Create a GX context
@@ -22,7 +21,6 @@ context = gx.get_context()
 # ---------------------
 # filepath-specific
 # ---------------------
-CURRENT_DATE_STR = datetime.now().strftime("%Y%m%d")
 SCRIPT_DIR = os.path.dirname(__file__)
 PROJECT_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
 TEMPLATES_DIR = os.path.join(PROJECT_DIR, "src", "templates", "jinja_templates")
@@ -33,6 +31,16 @@ PYTHON_SCRIPTS_DIR = os.path.join(PROJECT_DIR, "src", "py")
 GX_DATA_DOCS_DIR = "gx/uncommitted/data_docs/local_site/"
 GX_DATA_DOCS_HTML_FILE = os.path.join(GX_DATA_DOCS_DIR, "index.html")
 HTML_JINJA_TEMPLATE = os.path.join(TEMPLATES_DIR, "index.html.j2")
+CURRENT_DATE_STR = datetime.now().strftime("%Y%m%d")
+
+
+def create_backup(file_path):
+    backup_path = os.path.join(GX_DATA_DOCS_DIR, "bkp_index.html")
+    try:
+        shutil.copyfile(file_path, backup_path)
+        logger.debug(f"Backup created: {backup_path}")
+    except Exception as e:
+        logger.error(f"Error creating backup: {e}")
 
 
 def modify_html_file(file_path):
@@ -224,10 +232,31 @@ def find_and_replace_html_code():
         sys.exit()
 
 
+def main():
+    try:
+        # Check if the index.html file exists
+        if os.path.exists(GX_DATA_DOCS_HTML_FILE):
+            # Step 1: Create a backup of the original index.html file
+            create_backup(GX_DATA_DOCS_HTML_FILE)
+
+            # Step 2: Find and replace specific HTML and JavaScript patterns
+            find_and_replace_html_code()
+
+            # Step 3: Add data profiling content using Jinja templates
+            add_data_profiling_content()
+
+            # Step 4: Modify the HTML file content
+            modify_html_file(GX_DATA_DOCS_HTML_FILE)
+
+            # Step 5: Open the Great Expectations data documentation
+            context.open_data_docs()
+        else:
+            # Log an error if the file doesn't exist
+            logger.error(f"Error: File '{GX_DATA_DOCS_HTML_FILE}' not found.")
+    except Exception as e:
+        # Log any exceptions that occur during execution
+        logger.error(f"An error occurred: {e}")
+
+
 if __name__ == "__main__":
-    # Step 1: Create a backup of the original index.html file
-    shutil.copyfile(GX_DATA_DOCS_HTML_FILE, os.path.join(GX_DATA_DOCS_DIR, "bkp_index.html"))
-    find_and_replace_html_code()
-    add_data_profiling_content()
-    modify_html_file(GX_DATA_DOCS_HTML_FILE)
-    context.open_data_docs()
+    main()

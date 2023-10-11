@@ -78,5 +78,5 @@ echo -e "${PURPLE}* Validate contents of .env file.${COLOUR_OFF}"
 validate_env_file
 
 # Step 2: Validate config.yaml
-echo -e "${PURPLE}* Validate contents of config.yaml.${COLOUR_OFF}" && echo
+echo -e "${PURPLE}* Validate contents of config.yaml.${COLOUR_OFF}"
 validate_config_yaml
