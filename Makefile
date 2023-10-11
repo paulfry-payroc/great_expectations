@@ -16,12 +16,11 @@ SHELL = /bin/sh
 include config.mk
 
 VENV_ACTIVATE := . ./.venv/bin/activate
-GX_PROJECT_DIR := gx
 
 #=======================================================================
 # Targets
 #=======================================================================
-all: clean deps install create_gx_profiler_and_expectation_suite
+all: clean deps install create_gx_profiler_and_expectation_suite update_gx_data_docs
 
 deps:
 	@echo && echo "${PURPLE}Create a virtualenv (.venv) with the required Python libraries installed - see requirements.txt.${COLOUR_OFF}"
@@ -43,6 +42,9 @@ create_gx_profiler_and_expectation_suite:
 	@echo && echo "${YELLOW}Called makefile target 'create_gx_profiler_and_expectation_suite'.${COLOUR_OFF}" && echo
 	@${VENV_ACTIVATE} && python3 src/py/create_gx_data_profiler.py
 	@${VENV_ACTIVATE} && python3 src/py/create_gx_expectation_suite.py
+
+update_gx_data_docs:
+	@echo && echo "${YELLOW}Called makefile target 'update_gx_data_docs'.${COLOUR_OFF}" && echo
 	@${VENV_ACTIVATE} && python3 src/py/update_gx_data_docs.py
 
 # Validation check target
