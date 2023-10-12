@@ -1,6 +1,7 @@
 import logging
 import os
 
+import colorlog
 import yaml
 from dotenv import load_dotenv
 
@@ -8,26 +9,49 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+# Custom Exceptions
 class InvalidYAMLFileError(Exception):
+    """Exception raised for invalid or missing data in the YAML file."""
+
     pass
 
 
 class MissingEnvironmentVariableError(Exception):
+    """Exception raised for missing environment variables."""
+
     pass
 
 
+# Logger Setup
 def get_logger(log_level=logging.INFO):
-    """Set up a specific logger with desired output level"""
+    """Set up a specific logger with desired output level and colored formatting"""
 
-    logging.basicConfig(format="%(message)s")
     logger = logging.getLogger("application_logger")
-    logger.setLevel(log_level)
+
+    # Prevent adding duplicate handlers
+    if not logger.handlers:
+        logger.setLevel(log_level)
+        handler = colorlog.StreamHandler()
+        handler.setFormatter(
+            colorlog.ColoredFormatter(
+                "%(log_color)s%(message)s",
+                log_colors={
+                    "DEBUG": "cyan",
+                    "INFO": "green",
+                    "WARNING": "yellow",
+                    "ERROR": "red",
+                    "CRITICAL": "bold_red",
+                },
+            )
+        )
+        logger.addHandler(handler)
+
     return logger
 
 
+# Configuration Loading
 def load_config_from_yaml(file_path="config.yaml"):
     """Load and validate configuration data from a YAML file."""
-
     try:
         logger = get_logger()
 
@@ -64,6 +88,7 @@ def load_config_from_yaml(file_path="config.yaml"):
     return input_tables, other_params
 
 
+# Snowflake Connection String Creation
 def validate_environment_variables():
     """Validates required Snowflake connection environment variables."""
 
@@ -84,7 +109,6 @@ def validate_environment_variables():
 
 def create_snowflake_connection_string():
     """Creates and returns a Snowflake connection string based on environment variables."""
-
     # validate that the env vars exist
     validate_environment_variables()
 
