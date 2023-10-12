@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import warnings
 from datetime import datetime
 
@@ -92,14 +93,15 @@ def main():
         )
 
         for input_table in input_tables:
-            logger.info(f"Input table = {input_table}")
+            logger.debug(f"Input table = {input_table}")
 
             pandas_dataset = snowflake_client.snowflake_query(
                 snowflake_client.setup_snowflake_connection(), input_table, row_count_limit
             )
             generate_data_profiling_html(pandas_dataset, input_table)
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
+        logger.error(f"\nAn error occurred: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

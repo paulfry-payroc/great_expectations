@@ -1,4 +1,5 @@
 import logging
+import sys
 import warnings
 
 import common
@@ -49,7 +50,8 @@ def add_snowflake_tables_to_gx():
                 logger.error(f"Error adding table '{table}': {e}")
                 raise
     except (common.MissingEnvironmentVariableError, ValueError) as e:
-        logger.error(f"An error occurred: {e}")
+        logger.error(f"\nAn error occurred: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

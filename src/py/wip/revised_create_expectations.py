@@ -1,3 +1,4 @@
+import sys
 import time
 import warnings
 from datetime import datetime
@@ -121,7 +122,8 @@ def main():
         context.build_data_docs()
 
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
+        logger.error(f"\nAn error occurred: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

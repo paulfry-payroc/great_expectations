@@ -1,5 +1,7 @@
+import sys
 import warnings
 from datetime import datetime
+from time import time
 
 import common
 import great_expectations as gx
@@ -93,16 +95,25 @@ def main():
         )
 
         for input_table in input_tables:
-            logger.info(f"\nCreating (test) expectation suite for table: {input_table}")
+            logger.info(f"Creating (test) expectation suite for table: {input_table}")
             batch_request = prepare_batch_request(input_table, gx_data_src_name, row_count_limit)
             expectation_suite_name = prepare_expectation_suite(input_table)
+
+            # Measure time taken by run_onboarding_data_assistant
+            START_TIME = time()
             data_assistant_result = run_onboarding_data_assistant(batch_request)
+            ELAPSED_TIME = round(time() - START_TIME, 0)
+
+            # Log the elapsed time
+            logger.info(f"\nTime taken for table '{input_table}': {ELAPSED_TIME} seconds")
+
             save_expectation_suite(data_assistant_result, expectation_suite_name)
             create_and_run_checkpoint(batch_request, expectation_suite_name)
         context.build_data_docs()
 
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
+        logger.error(f"\nAn error occurred: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

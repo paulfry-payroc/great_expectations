@@ -10,7 +10,8 @@ from bs4 import BeautifulSoup
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 
-logger = common.get_logger()  # Set up logging
+# Set up logging
+logger = common.get_logger()
 # logger = common.get_logger(log_level=logging.DEBUG)
 
 # Create a GX context
@@ -111,7 +112,8 @@ def add_data_profiling_content():
             op_file.write(jinja_template.render(input_tables=input_tables, current_data_str=CURRENT_DATE_STR))
 
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
+        logger.error(f"\nAn error occurred: {e}")
+        sys.exit(1)
 
 
 def setup_jinja_template(ip_jinja_template_file):
@@ -126,7 +128,7 @@ def read_target_html_from_file(file_path):
             return file.read()
     except Exception as e:
         logger.debug(f"ERROR: An error occurred while reading the input file: {e}")
-        sys.exit()
+        sys.exit(1)
 
 
 def prettify_html(input_file):
@@ -148,7 +150,7 @@ def prettify_html(input_file):
 
     except Exception as e:
         logger.debug(f"ERROR: An error occurred while processing the input HTML: {e}")
-        sys.exit()
+        sys.exit(1)
 
 
 def find_and_replace_html_code():
@@ -185,7 +187,7 @@ def find_and_replace_html_code():
             logger.debug("SUCCESS: Subsequent HTML elements found in the file.")
         else:
             logger.error("ERROR: Subsequent HTML elements not found in the file.")
-            sys.exit()
+            sys.exit(1)
 
         if js_match:
             specific_js_code = js_match.group()
@@ -193,7 +195,7 @@ def find_and_replace_html_code():
             logger.debug(specific_js_code)
         else:
             logger.error("ERROR: Specific JavaScript content not found in the HTML file.")
-            sys.exit()
+            sys.exit(1)
 
         # Check if combined pattern is true
         if combined_html_pattern_match:
@@ -219,17 +221,17 @@ def find_and_replace_html_code():
                     prettify_html(html_file)
                 except Exception as e:
                     logger.error(f"Error occurred while writing {html_file}: {e}")
-                    sys.exit()
+                    sys.exit(1)
 
             # Output success message
             logger.debug("SUCCESS: HTML processing and pattern replacement completed.")
         else:
             logger.error("ERROR: Combined JavaScript and HTML patterns not found in the file.")
-            sys.exit()
+            sys.exit(1)
 
     except Exception as e:
         logger.error(f"ERROR: An error occurred during HTML processing and pattern replacement: {e}")
-        sys.exit()
+        sys.exit(1)
 
 
 def main():
@@ -255,7 +257,8 @@ def main():
             logger.error(f"Error: File '{GX_DATA_DOCS_HTML_FILE}' not found.")
     except Exception as e:
         # Log any exceptions that occur during execution
-        logger.error(f"An error occurred: {e}")
+        logger.error(f"\nAn error occurred: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
