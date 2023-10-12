@@ -9,7 +9,6 @@ gx/.gitignore
 *creds*
 
 # Private Files
-*.json
 *.csv
 *.csv.gz
 *.tsv
