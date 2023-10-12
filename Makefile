@@ -34,7 +34,7 @@ deps:
 install: validate_env_vars
 	@echo && echo "${INFO}Called makefile target 'install'. Set up GX (Great Expectations) project.${COLOUR_OFF}" && echo
 	@echo "${DEBUG}* Initialise GX project.${COLOUR_OFF}"
-	@${VENV_ACTIVATE} && echo "Y" | great_expectations init --no-usage-stats > /dev/null 2>&1
+	@${VENV_ACTIVATE} && echo "Y" | great_expectations init --no-usage-stats > /dev/null 2>&1 && rm -rf gx/.gitignore
 	@echo "${DEBUG}* Add Snowflake tables to GX project.${COLOUR_OFF}"
 	@${VENV_ACTIVATE} && python3 src/py/create_gx_snowflake_table_loader.py
 
