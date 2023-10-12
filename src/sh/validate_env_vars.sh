@@ -19,7 +19,7 @@ ENV_VARS_TO_VALIDATE=("SNOWFLAKE_ACCOUNT" "SNOWFLAKE_USER" "SNOWFLAKE_PASSWORD" 
 # Function to validate the existance of an .env file
 verify_env_file_exists() {
     if [ ! -f "$ENV_FILE" ]; then
-        echo -e "${RED}Error: .env file not found.${COLOUR_OFF}"
+        echo -e "${ERROR}Error: .env file not found.${COLOUR_OFF}"
         exit 1
     fi
 }
@@ -28,7 +28,7 @@ verify_env_file_exists() {
 validate_env_file() {
     for var in "${ENV_VARS_TO_VALIDATE[@]}"; do
         if [ -z "${!var}" ]; then
-            echo && echo -e "${RED}Error: .env file error - '$var' is not populated in .env file.${COLOUR_OFF}" && echo
+            echo && echo -e "${ERROR}Error: .env file error - '$var' is not populated in .env file.${COLOUR_OFF}" && echo
             exit 1
         fi
     done
@@ -47,7 +47,7 @@ validate_config_yaml() {
     for var in "${VALIDATED_VARIABLES[@]}"; do
         value="${!var}"
         if [ -z "$value" ]; then
-            echo -e "${RED}Error: config.yaml error - '$var' must not be empty in config.yaml.${COLOUR_OFF}" && echo
+            echo -e "${ERROR}Error: config.yaml error - '$var' must not be empty in config.yaml.${COLOUR_OFF}" && echo
             exit 1
         fi
     done
@@ -70,13 +70,13 @@ display_extracted_values() {
 #=======================================================================
 
 # Step 1: Verify .env file exists
-echo -e "${PURPLE}* Check if .env file exists.${COLOUR_OFF}"
+echo -e "${DEBUG}* Check if .env file exists.${COLOUR_OFF}"
 verify_env_file_exists
 
 # Step 2: validate .env file
-echo -e "${PURPLE}* Validate contents of .env file.${COLOUR_OFF}"
+echo -e "${DEBUG}* Validate contents of .env file.${COLOUR_OFF}"
 validate_env_file
 
 # Step 2: Validate config.yaml
-echo -e "${PURPLE}* Validate contents of config.yaml.${COLOUR_OFF}"
+echo -e "${DEBUG}* Validate contents of config.yaml.${COLOUR_OFF}"
 validate_config_yaml
