@@ -1,0 +1,123 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "20231012_dim_sales_office",
+  "expectations": [
+    {
+      "expectation_type": "expect_table_row_count_to_be_between",
+      "kwargs": {
+        "max_value": 50,
+        "min_value": 50
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {},
+            "metric_name": "table.row_count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 1
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_table_columns_to_match_set",
+      "kwargs": {
+        "column_set": [
+          "is_shipping_same_as_mailing",
+          "sales_group_phone_for_merchant",
+          "monthly_minimum_exception_date",
+          "merchant_default_high_monthly_volume",
+          "key",
+          "billing_state",
+          "date_terminated",
+          "merchant_default_high_ticket",
+          "ach_status",
+          "prepaid_requested",
+          "primary_sales_channel",
+          "exclude_from_pci_non_compliance_fee",
+          "source",
+          "dbt_last_modified",
+          "deleted_date",
+          "first_month_processing_minimum",
+          "merchant_default_auto_calculate_surcharge_percentage",
+          "is_deleted",
+          "merchant_default_surcharge_percentage",
+          "merchant_default_average_monthly_volume",
+          "status",
+          "dwh_updated_dt",
+          "date_approved",
+          "region",
+          "sales_group_number",
+          "contract_quota_quarterly",
+          "sales_group_name",
+          "merchant_default_average_tip_percentage",
+          "source_updated_date",
+          "manager_name",
+          "fax_number",
+          "contract_quota_yearly_avg",
+          "billing_city",
+          "number_of_offices",
+          "merchant_mcc_code",
+          "billing_street",
+          "in_house_group",
+          "agreement_version",
+          "first_app_received",
+          "pci_compliance_fee_amount_override",
+          "source_created_date",
+          "partner_type",
+          "business_unit",
+          "merchant_dnc_list",
+          "fee_program_name",
+          "residual_gl",
+          "merchant_default_internet_percentage",
+          "billing_zip_code",
+          "secondary_sales_channel",
+          "iso",
+          "dwh_created_dt",
+          "residual_ar",
+          "date_received",
+          "contract_quota_yearly",
+          "prepay_status",
+          "month_end_reject_reversal",
+          "contract_quota_monthly_avg",
+          "contract_quota_quarterly_avg",
+          "handles_sales_leads",
+          "merchant_default_moto_percentage",
+          "date_signed",
+          "last_followup_date",
+          "work_phone",
+          "payment_method",
+          "residual_calculation_data",
+          "years_in_business",
+          "number_of_reps",
+          "tin_validated",
+          "source_system_id",
+          "business_group",
+          "email_address",
+          "merchant_mcc_description",
+          "status_date",
+          "termination_reason",
+          "merchant_default_swiped_percentage",
+          "merchant_default_keyed_percentage",
+          "contract_quota_monthly"
+        ],
+        "exact_match": null
+      },
+      "meta": {
+        "profiler_details": {
+          "success_ratio": 1.0
+        }
+      }
+    }
+  ],
+  "ge_cloud_id": null,
+  "meta": {
+    "citations": [
+      {
+        "citation_date": "2023-10-12T15:26:32.051781Z",
+        "comment": "Created by effective Rule-Based Profiler of OnboardingDataAssistant with the configuration included.\n"
+      }
+    ],
+    "great_expectations_version": "0.17.19"
+  }
+}

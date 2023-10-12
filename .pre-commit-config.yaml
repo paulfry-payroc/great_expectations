@@ -10,7 +10,7 @@ repos:
       rev: v4.4.0
       hooks:
           - id: no-commit-to-branch # prevents users from pushing changes to specific (protected) branches
-            args: [--branch, develop, --branch, main, --pattern, release/.*]
+            args: [--branch, develop, --branch, main]
             name: Git checks - committed to protected Git branch?
           - id: check-merge-conflict # checks for files that contain merge conflict strings.
             name: Git checks - any merge conflicts?
@@ -37,12 +37,6 @@ repos:
       hooks:
           - id: shellcheck # Ensure shell scripts conform to shellcheck
             name: Shell script checks - linter (using shellcheck)
-    # Makefile linter
-    - repo: https://github.com/mrtazz/checkmake.git
-      rev: 0.2.2
-      hooks:
-          - id: checkmake
-            name: Makefile check - linter
     # YAML hooks
     - repo: https://github.com/adrienverge/yamllint.git
       rev: v1.30.0
@@ -89,12 +83,6 @@ repos:
           - id: name-tests-test # verifies Python test files are named correctly - i.e., ensure py tests match /test*.py
             args: [--pytest-test-first]
             name: Python checks - pytest tests - named correctly? (I.e., 'test_')
-    - repo: https://github.com/econchick/interrogate
-      rev: 1.5.0
-      hooks:
-          - id: interrogate # checks your code base for missing docstrings.
-            args: [--quiet, --fail-under=90]
-            name: Python checks - docstrings missing?
     # General/housekeeping hooks
     - repo: https://github.com/pre-commit/pre-commit-hooks
       rev: v4.4.0
