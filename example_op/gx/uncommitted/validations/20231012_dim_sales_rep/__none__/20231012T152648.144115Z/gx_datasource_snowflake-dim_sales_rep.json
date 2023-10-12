@@ -1,0 +1,166 @@
+{
+  "evaluation_parameters": {},
+  "meta": {
+    "active_batch_definition": {
+      "batch_identifiers": {},
+      "data_asset_name": "dim_sales_rep",
+      "data_connector_name": "fluent",
+      "datasource_name": "gx_datasource_snowflake"
+    },
+    "batch_markers": {
+      "ge_load_time": "20231012T152648.165636Z"
+    },
+    "batch_spec": {
+      "batch_identifiers": {},
+      "data_asset_name": "dim_sales_rep",
+      "query": "SELECT * FROM dim_sales_rep LIMIT 50",
+      "temp_table_schema_name": null
+    },
+    "checkpoint_id": null,
+    "checkpoint_name": "my_checkpoint",
+    "expectation_suite_name": "20231012_dim_sales_rep",
+    "great_expectations_version": "0.17.19",
+    "run_id": {
+      "run_name": null,
+      "run_time": "2023-10-12T16:26:48.144115+01:00"
+    },
+    "validation_id": null,
+    "validation_time": "20231012T152649.417283Z"
+  },
+  "results": [
+    {
+      "exception_info": {
+        "exception_message": null,
+        "exception_traceback": null,
+        "raised_exception": false
+      },
+      "expectation_config": {
+        "expectation_type": "expect_table_row_count_to_be_between",
+        "kwargs": {
+          "batch_id": "gx_datasource_snowflake-dim_sales_rep",
+          "max_value": 50,
+          "min_value": 50
+        },
+        "meta": {
+          "profiler_details": {
+            "metric_configuration": {
+              "domain_kwargs": {},
+              "metric_name": "table.row_count",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 1
+          }
+        }
+      },
+      "meta": {},
+      "result": {
+        "observed_value": 50
+      },
+      "success": true
+    },
+    {
+      "exception_info": {
+        "exception_message": null,
+        "exception_traceback": null,
+        "raised_exception": false
+      },
+      "expectation_config": {
+        "expectation_type": "expect_table_columns_to_match_set",
+        "kwargs": {
+          "batch_id": "gx_datasource_snowflake-dim_sales_rep",
+          "column_set": [
+            "agent_number",
+            "key",
+            "state",
+            "dwh_created_dt",
+            "dbt_last_modified",
+            "deleted_date",
+            "primary_rep",
+            "middle_name",
+            "parent_id",
+            "city",
+            "zip_postal_code",
+            "source_system",
+            "work_phone",
+            "mobile_phone",
+            "is_deleted",
+            "full_address",
+            "status",
+            "first_name",
+            "dwh_updated_dt",
+            "title",
+            "address_line_2",
+            "address_line_1",
+            "name_suffix",
+            "source_updated_date",
+            "source_system_id",
+            "fax_number",
+            "email_address",
+            "home_phone",
+            "status_date",
+            "address_line_3",
+            "secondary_channel_override",
+            "business_unit",
+            "source_created_date",
+            "last_name",
+            "full_name"
+          ],
+          "exact_match": null
+        },
+        "meta": {
+          "profiler_details": {
+            "success_ratio": 1.0
+          }
+        }
+      },
+      "meta": {},
+      "result": {
+        "observed_value": [
+          "key",
+          "source_system_id",
+          "business_unit",
+          "agent_number",
+          "full_name",
+          "is_deleted",
+          "deleted_date",
+          "first_name",
+          "middle_name",
+          "last_name",
+          "name_suffix",
+          "title",
+          "status",
+          "status_date",
+          "email_address",
+          "work_phone",
+          "home_phone",
+          "mobile_phone",
+          "fax_number",
+          "address_line_1",
+          "address_line_2",
+          "address_line_3",
+          "city",
+          "state",
+          "zip_postal_code",
+          "full_address",
+          "primary_rep",
+          "parent_id",
+          "secondary_channel_override",
+          "source_created_date",
+          "source_updated_date",
+          "dwh_created_dt",
+          "dwh_updated_dt",
+          "source_system",
+          "dbt_last_modified"
+        ]
+      },
+      "success": true
+    }
+  ],
+  "statistics": {
+    "evaluated_expectations": 2,
+    "success_percent": 100.0,
+    "successful_expectations": 2,
+    "unsuccessful_expectations": 0
+  },
+  "success": true
+}

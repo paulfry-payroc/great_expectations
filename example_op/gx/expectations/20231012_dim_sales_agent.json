@@ -1,0 +1,80 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "20231012_dim_sales_agent",
+  "expectations": [
+    {
+      "expectation_type": "expect_table_row_count_to_be_between",
+      "kwargs": {
+        "max_value": 50,
+        "min_value": 50
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {},
+            "metric_name": "table.row_count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 1
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_table_columns_to_match_set",
+      "kwargs": {
+        "column_set": [
+          "agent_number",
+          "key",
+          "state",
+          "dwh_created_dt",
+          "dbt_last_modified",
+          "deleted_date",
+          "primary_rep",
+          "middle_name",
+          "parent_id",
+          "city",
+          "zip_postal_code",
+          "work_phone",
+          "mobile_phone",
+          "is_deleted",
+          "full_address",
+          "status",
+          "first_name",
+          "dwh_updated_dt",
+          "title",
+          "address_line_2",
+          "address_line_1",
+          "name_suffix",
+          "source_updated_date",
+          "source_system_id",
+          "fax_number",
+          "email_address",
+          "home_phone",
+          "status_date",
+          "address_line_3",
+          "secondary_channel_override",
+          "business_unit",
+          "source_created_date",
+          "last_name",
+          "full_name"
+        ],
+        "exact_match": null
+      },
+      "meta": {
+        "profiler_details": {
+          "success_ratio": 1.0
+        }
+      }
+    }
+  ],
+  "ge_cloud_id": null,
+  "meta": {
+    "citations": [
+      {
+        "citation_date": "2023-10-12T15:26:01.542763Z",
+        "comment": "Created by effective Rule-Based Profiler of OnboardingDataAssistant with the configuration included.\n"
+      }
+    ],
+    "great_expectations_version": "0.17.19"
+  }
+}
