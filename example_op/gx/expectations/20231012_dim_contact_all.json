@@ -1,0 +1,75 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "20231012_dim_contact_all",
+  "expectations": [
+    {
+      "expectation_type": "expect_table_row_count_to_be_between",
+      "kwargs": {
+        "max_value": 50,
+        "min_value": 50
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {},
+            "metric_name": "table.row_count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 1
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_table_columns_to_match_set",
+      "kwargs": {
+        "column_set": [
+          "name",
+          "mid",
+          "email",
+          "contact_last_name",
+          "phone",
+          "dwh_updated_dt",
+          "title",
+          "key",
+          "country",
+          "state",
+          "sales_office_key",
+          "dwh_created_dt",
+          "address",
+          "dbt_last_modified",
+          "zip",
+          "contact_first_name",
+          "fax",
+          "merchant_key",
+          "sales_rep_key",
+          "type",
+          "source_updated_date",
+          "zip5",
+          "source_system_id",
+          "website",
+          "contact_key",
+          "source_system_merchant_id",
+          "city",
+          "source_created_date",
+          "business_unit"
+        ],
+        "exact_match": null
+      },
+      "meta": {
+        "profiler_details": {
+          "success_ratio": 1.0
+        }
+      }
+    }
+  ],
+  "ge_cloud_id": null,
+  "meta": {
+    "citations": [
+      {
+        "citation_date": "2023-10-12T15:27:15.714984Z",
+        "comment": "Created by effective Rule-Based Profiler of OnboardingDataAssistant with the configuration included.\n"
+      }
+    ],
+    "great_expectations_version": "0.17.19"
+  }
+}
