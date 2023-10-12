@@ -42,7 +42,7 @@ create_gx_profiler_and_expectation_suite:
 	@echo && echo "${INFO}Called makefile target 'create_gx_profiler_and_expectation_suite'.${COLOUR_OFF}" && echo
 	@echo "${DEBUG}* Profile input tables.${COLOUR_OFF}" && echo
 	@${VENV_ACTIVATE} && python3 src/py/create_gx_data_profiler.py && echo
-	@echo "${DEBUG}* Create (test) expectation suites for each input table.${COLOUR_OFF}" && echo
+	@echo "${DEBUG}* Create (test) expectation suites for each input table.${COLOUR_OFF}"
 	@${VENV_ACTIVATE} && python3 src/py/create_gx_expectation_suite.py
 
 update_gx_data_docs:

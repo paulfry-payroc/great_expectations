@@ -36,8 +36,8 @@ def get_logger(log_level=logging.INFO):
             colorlog.ColoredFormatter(
                 "%(log_color)s%(message)s",
                 log_colors={
-                    "DEBUG": "cyan",
-                    "INFO": "green",
+                    "DEBUG": "green",
+                    "INFO": "cyan",
                     "WARNING": "yellow",
                     "ERROR": "red",
                     "CRITICAL": "bold_red",

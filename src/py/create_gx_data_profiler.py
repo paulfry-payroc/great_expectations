@@ -79,7 +79,7 @@ def generate_data_profiling_html(pandas_dataset, input_table):
         write_html_file(directory, filename, content)  # Write HTML content to files
         remove_relative_paths_from_html(os.path.join(directory, filename))  # Remove relative file paths
 
-    logger.info(f"Created data profile for: {input_table}")
+    logger.info(f"Created data profile for table: {input_table}")
 
     return
 

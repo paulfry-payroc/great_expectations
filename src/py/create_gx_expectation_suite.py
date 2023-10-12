@@ -94,22 +94,29 @@ def main():
             f"input tables = {input_tables}\ngx_data_src_name = {gx_data_src_name}\nrow_count_limit = {row_count_limit}"
         )
 
+        table_times = []  # List to store elapsed time for each table
+
         for input_table in input_tables:
-            logger.info(f"Creating (test) expectation suite for table: {input_table}")
+            logger.info(f"\nCreating (test) expectation suite for table: {input_table}")
             batch_request = prepare_batch_request(input_table, gx_data_src_name, row_count_limit)
             expectation_suite_name = prepare_expectation_suite(input_table)
 
             # Measure time taken by run_onboarding_data_assistant
             START_TIME = time()
             data_assistant_result = run_onboarding_data_assistant(batch_request)
-            ELAPSED_TIME = round(time() - START_TIME, 0)
+            ELAPSED_TIME = int(round(time() - START_TIME, 0))
 
-            # Log the elapsed time
-            logger.info(f"\nTime taken for table '{input_table}': {ELAPSED_TIME} seconds")
+            # Store elapsed time and input table information in the list
+            table_times.append({"table": input_table, "elapsed_time": ELAPSED_TIME})
 
             save_expectation_suite(data_assistant_result, expectation_suite_name)
             create_and_run_checkpoint(batch_request, expectation_suite_name)
         context.build_data_docs()
+
+        logger.info("Time taken to create (test) expectation suite for tables:")
+        # Log the elapsed time for each table after the for loop
+        for table_info in table_times:
+            logger.info(f"{table_info['table']}': {table_info['elapsed_time']} seconds.")
 
     except Exception as e:
         logger.error(f"\nAn error occurred: {e}")
