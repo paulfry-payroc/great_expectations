@@ -3,6 +3,7 @@ great_expectations.yml
 gx/expectations/.ge_store_backend_id
 gx/plugins/
 gx/.gitignore
+src/templates/jinja_templates/index.html.j2
 
 # Common credential files
 *.p8

@@ -43,51 +43,31 @@ def create_backup(file_path):
         logger.error(f"Error creating backup: {e}")
 
 
-def modify_html_file(file_path):
+def modify_html_tabs_content(file_path):
     """Modifies the specified HTML file content, replacing the specified text."""
+
+    # Validate if the input file exists
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"File not found: {file_path}")
 
     # Read the content of the HTML file
     with open(file_path) as file:
-        content = file.read()
+        html_content = file.read()
 
-    # Define the pattern to be found using a regular expression
-    old_text_pattern = r'<li class="nav-item">\s*<a\s*aria-controls="Expectation-Suites"\s*aria-selected="false"\s*class="nav-link"\s*data-toggle="tab"\s*href="#Expectation-Suites"\s*id="Expectation-Suites-tab"\s*role="tab">\s*Expectation Suites\s*</a>\s*</li>'  # noqa
+    # The old/existing html pattern/content to find
+    old_html_pattern = r'<li class="nav-item">\s*<a\s*aria-controls="Expectation-Suites"\s*aria-selected="false"\s*class="nav-link"\s*data-toggle="tab"\s*href="#Expectation-Suites"\s*id="Expectation-Suites-tab"\s*role="tab">\s*Expectation Suites\s*</a>\s*</li>'  # noqa
+    # Read in the replacement HTML pattern/content from a text file
+    new_html_pattern = read_target_html_from_file(os.path.join(PYTHON_SCRIPTS_DIR, "txt/target_html_tabs.txt"))
 
-    # Specify the text to be replaced and its replacement
-    # old_text = (
-    #     '<li class="nav-item">\n'
-    #     '    <a class="nav-link" id="Expectation-Suites-tab" data-toggle="tab" href="#Expectation-Suites"\n'
-    #     '      role="tab" aria-selected="false" aria-controls="Expectation-Suites">\n'
-    #     "      Expectation Suites\n"
-    #     "    </a>\n"
-    #     "  </li>"
-    # )
-
-    # Define the replacement text
-    new_text = (
-        '<li class="nav-item">\n'
-        '    <a class="nav-link" id="Expectation-Suites-tab" data-toggle="tab" href="#Expectation-Suites"\n'
-        '      role="tab" aria-selected="false" aria-controls="Expectation-Suites">\n'
-        "      Expectation Suites\n"
-        "    </a>\n"
-        "</li>"
-        "\n"
-        '<li class="nav-item">\n'
-        '    <a class="nav-link" id="Profiling-Results-tab" data-toggle="tab" href="#Profiling-Results"\n'
-        '      role="tab" aria-selected="false" aria-controls="Profiling-Results">\n'
-        "      Profiling Results\n"
-        "    </a>\n"
-        "  </li>\n"
-    )
-
-    # Use re.search to check if the pattern exists in the content
-    if re.search(old_text_pattern, content, re.DOTALL):
-        # Use re.sub to replace the old text with the new text in the content
-        modified_content = re.sub(old_text_pattern, new_text, content)
+    # Check if the pattern exists in the html content
+    if re.search(old_html_pattern, html_content, re.DOTALL):
+        # Perform find and replace operation
+        updated_html_file = re.sub(old_html_pattern, new_html_pattern, html_content, flags=re.DOTALL)
 
         # Write the modified content back to the file
         with open(file_path, "w") as file:
-            file.write(modified_content)
+            file.write(updated_html_file)
+
         logger.debug(f"Text substitution successful in {file_path}")
     else:
         logger.error(f"No substitution made in {file_path}")
@@ -155,7 +135,8 @@ def prettify_html(input_file):
         sys.exit(1)
 
 
-def find_and_replace_html_code():
+def modify_html_content_patterns():
+    """Processes the input HTML file, identifies specific patterns, and replaces them with new content."""
     try:
         # Prettify the HTML content and get the prettified HTML
         prettified_html = prettify_html(GX_DATA_DOCS_HTML_FILE)
@@ -165,10 +146,8 @@ def find_and_replace_html_code():
         # -------------------------------------
         # HTML code pattern to find
         html_pattern = r"</script>\s*</div>\s*</div>\s*</div>\s*</div>\s*</div>\s*</div>\s*</div>\s*</div>\s*</div>\s*<footer>\s*<p>\s*Stay current on everything GX with our newsletter"  # noqa
-
         # JavaScript code pattern to find
         js_pattern = r'\$\(document\)\.ready\(function\(\)\s*\{\s*\$\("#section-1-content-block-2-2-body-table"\)\.on\(\'click-row\.bs\.table\',\s*function\(e,\s*row,\s*\$element\)\s*\{\s*window\.location\s*=\s*\$element\.data\("href"\);\s*\}\)\s*}\s*\);\s*'  # noqa
-
         # Combined JavaScript/HTML code pattern
         combined_html_pattern = js_pattern + html_pattern
 
@@ -245,13 +224,13 @@ def main():
             create_backup(GX_DATA_DOCS_HTML_FILE)
 
             # Step 2: Find and replace specific HTML and JavaScript patterns
-            find_and_replace_html_code()
+            modify_html_content_patterns()
 
             # Step 3: Add data profiling content using Jinja templates
             add_data_profiling_content()
 
             # Step 4: Modify the HTML file content
-            modify_html_file(GX_DATA_DOCS_HTML_FILE)
+            modify_html_tabs_content(GX_DATA_DOCS_HTML_FILE)
 
             # Step 5: Open the Great Expectations data documentation
             context.open_data_docs()
