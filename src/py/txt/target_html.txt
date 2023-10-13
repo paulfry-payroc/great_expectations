@@ -88,7 +88,7 @@
                                                 columns: [{ 'field': 'profiling_result_name', 'title': 'Profiling Results', 'sortable': 'true' }],
                                                 data: [
                                                     {%- for table in input_tables %}
-                                                    { 'profiling_result_name': '{{ current_data_str }}_{{ table }}', '_table_row_link_path': 'profiling_results/{{ current_data_str }}_{{ table }}.html' },
+                                                    { 'profiling_result_name': '{{ current_date_str }}_{{ table }}', '_table_row_link_path': 'profiling_results/{{ current_date_str }}_{{ table }}.html' },
                                                     {%- endfor %}
                                                 ],
                                             toolbar: '#section-1-content-block-2-3-body-table-toolbar'

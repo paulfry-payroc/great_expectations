@@ -6,8 +6,8 @@
 </li>
 
 <li class="nav-item">
-    <a class="nav-link" id="Expectation-Suites-tab" href="profiling_results.html"
-        aria-selected="false" aria-controls="Expectation-Suites">
+    <a class="nav-link" id="Profiling-Results-tab" data-toggle="tab" href="#Profiling-Results"
+        role="tab" aria-selected="false" aria-controls="Profiling-Results">
         Profiling Results
     </a>
 </li>
