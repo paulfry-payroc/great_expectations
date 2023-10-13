@@ -18,16 +18,14 @@ logger = common.get_logger()
 context = gx.get_context()
 
 # ---------------------
-# Constants
-# ---------------------
-# filepath-specific
+# Filepath-specific vars
 # ---------------------
 SCRIPT_DIR = os.path.dirname(__file__)
 PROJECT_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
 TEMPLATES_DIR = os.path.join(PROJECT_DIR, "src", "templates", "jinja_templates")
 PYTHON_SCRIPTS_DIR = os.path.join(PROJECT_DIR, "src", "py")
 # ---------------------
-# Other
+# Other vars
 # ---------------------
 GX_DATA_DOCS_DIR = "gx/uncommitted/data_docs/local_site/"
 GX_DATA_DOCS_HTML_FILE = os.path.join(GX_DATA_DOCS_DIR, "index.html")
@@ -36,6 +34,7 @@ CURRENT_DATE_STR = datetime.now().strftime("%Y%m%d")
 
 
 def create_backup(file_path):
+    """Creates a backup of the specified file at the provided backup path."""
     backup_path = os.path.join(GX_DATA_DOCS_DIR, "bkp_index.html")
     try:
         shutil.copyfile(file_path, backup_path)
@@ -96,6 +95,7 @@ def modify_html_file(file_path):
 
 
 def add_data_profiling_content():
+    """Adds data profiling content to the HTML file using Jinja template, based on input tables and current date."""
     try:
         input_tables, other_params = common.load_config_from_yaml()
         logger.debug(f"input tables = {input_tables}")
@@ -123,6 +123,7 @@ def setup_jinja_template(ip_jinja_template_file):
 
 
 def read_target_html_from_file(file_path):
+    """Reads the content of the target HTML file from the specified file path and returns it as a string."""
     try:
         with open(file_path, encoding="utf-8") as file:
             return file.read()
@@ -132,6 +133,7 @@ def read_target_html_from_file(file_path):
 
 
 def prettify_html(input_file):
+    """Prettifies the HTML content from the input file using BeautifulSoup, preserving formatting and structure."""
     try:
         with open(input_file, encoding="utf-8") as file:
             html_content = file.read()
@@ -235,6 +237,7 @@ def find_and_replace_html_code():
 
 
 def main():
+    """Main function to execute the script."""
     try:
         # Check if the index.html file exists
         if os.path.exists(GX_DATA_DOCS_HTML_FILE):
