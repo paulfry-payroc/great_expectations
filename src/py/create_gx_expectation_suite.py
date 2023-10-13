@@ -74,10 +74,10 @@ def save_expectation_suite(data_assistant_result, expectation_suite_name):
 def run_data_assistant(batch_request, exclude_column_names=[]):
     """Run onboarding data assistant with the provided batch request."""
     try:
-        # Measure time taken by run_data_assistant
         START_TIME = time()
         data_assistant_result = context.assistants.onboarding.run(batch_request=batch_request)
         logger.debug("Data assistant run successful.")
+        # Measure time taken by run_data_assistant
         ELAPSED_TIME = int(round(time() - START_TIME, 0))
         return data_assistant_result, ELAPSED_TIME  # Return the result of the data assistant run
     except Exception as e:
