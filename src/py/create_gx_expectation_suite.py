@@ -25,7 +25,7 @@ def seconds_to_human_readable(seconds):
     # Convert seconds to minutes and hours, and format the result as 'X hours and Y minutes'
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
-    return f"{hours} hours and {minutes} minutes"
+    return f"{hours} hours, {minutes} minutes and {seconds}."
 
 
 def log_expectation_suite_creation_times(table_times):

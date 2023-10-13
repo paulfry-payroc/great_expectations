@@ -1,12 +1,11 @@
 import os
-import re
 import shutil
 import sys
 from datetime import datetime
 
 import common
 import great_expectations as gx
-from bs4 import BeautifulSoup
+import modify_html_functions
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 
@@ -14,64 +13,22 @@ from jinja2 import FileSystemLoader
 logger = common.get_logger()
 # logger = common.get_logger(log_level=logging.DEBUG)
 
-# Create a GX context
-context = gx.get_context()
-
 # ---------------------
 # Filepath-specific vars
 # ---------------------
 SCRIPT_DIR = os.path.dirname(__file__)
 PROJECT_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
 TEMPLATES_DIR = os.path.join(PROJECT_DIR, "src", "templates", "jinja_templates")
-PYTHON_SCRIPTS_DIR = os.path.join(PROJECT_DIR, "src", "py")
-# ---------------------
-# Other vars
-# ---------------------
 GX_DATA_DOCS_DIR = "gx/uncommitted/data_docs/local_site/"
 GX_DATA_DOCS_HTML_FILE = os.path.join(GX_DATA_DOCS_DIR, "index.html")
-HTML_JINJA_TEMPLATE = os.path.join(TEMPLATES_DIR, "index.html.j2")
+# Other
 CURRENT_DATE_STR = datetime.now().strftime("%Y%m%d")
 
 
-def create_backup(file_path):
-    """Creates a backup of the specified file at the provided backup path."""
-    backup_path = os.path.join(GX_DATA_DOCS_DIR, "bkp_index.html")
-    try:
-        shutil.copyfile(file_path, backup_path)
-        logger.debug(f"Backup created: {backup_path}")
-    except Exception as e:
-        logger.error(f"Error creating backup: {e}")
-
-
-def modify_html_tabs_content(file_path):
-    """Modifies the specified HTML file content, replacing the specified text."""
-
-    # Validate if the input file exists
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"File not found: {file_path}")
-
-    # Read the content of the HTML file
-    with open(file_path) as file:
-        html_content = file.read()
-
-    # The old/existing html pattern/content to find
-    old_html_pattern = r'<li class="nav-item">\s*<a\s*aria-controls="Expectation-Suites"\s*aria-selected="false"\s*class="nav-link"\s*data-toggle="tab"\s*href="#Expectation-Suites"\s*id="Expectation-Suites-tab"\s*role="tab">\s*Expectation Suites\s*</a>\s*</li>'  # noqa
-    # Read in the replacement HTML pattern/content from a text file
-    new_html_pattern = read_target_html_from_file(os.path.join(PYTHON_SCRIPTS_DIR, "txt/target_html_tabs.txt"))
-
-    # Check if the pattern exists in the html content
-    if re.search(old_html_pattern, html_content, re.DOTALL):
-        # Perform find and replace operation
-        updated_html_file = re.sub(old_html_pattern, new_html_pattern, html_content, flags=re.DOTALL)
-
-        # Write the modified content back to the file
-        with open(file_path, "w") as file:
-            file.write(updated_html_file)
-
-        logger.debug(f"Text substitution successful in {file_path}")
-    else:
-        logger.error(f"No substitution made in {file_path}")
-        sys.exit(1)
+def setup_jinja_template(ip_jinja_template_file):
+    """Set up/get the Jinja template"""
+    jinja_env = Environment(loader=FileSystemLoader(TEMPLATES_DIR), autoescape=True)
+    return jinja_env.get_template(ip_jinja_template_file)
 
 
 def add_data_profiling_content():
@@ -89,130 +46,21 @@ def add_data_profiling_content():
             sys.exit(1)
 
         with open(GX_DATA_DOCS_HTML_FILE, "w") as op_file:
-            op_file.write(jinja_template.render(input_tables=input_tables, current_data_str=CURRENT_DATE_STR))
+            op_file.write(jinja_template.render(input_tables=input_tables, current_date_str=CURRENT_DATE_STR))
 
     except Exception as e:
         logger.error(f"\nAn error occurred: {e}")
         sys.exit(1)
 
 
-def setup_jinja_template(ip_jinja_template_file):
-    """Set up/get the Jinja template"""
-    jinja_env = Environment(loader=FileSystemLoader(TEMPLATES_DIR), autoescape=True)
-    return jinja_env.get_template(ip_jinja_template_file)
-
-
-def read_target_html_from_file(file_path):
-    """Reads the content of the target HTML file from the specified file path and returns it as a string."""
+def create_html_backup(file_path):
+    """Creates a backup of the specified file."""
+    backup_path = os.path.join(GX_DATA_DOCS_DIR, "bkp_index.html")
     try:
-        with open(file_path, encoding="utf-8") as file:
-            return file.read()
+        shutil.copyfile(file_path, backup_path)
+        logger.debug(f"Backup created: {backup_path}")
     except Exception as e:
-        logger.debug(f"ERROR: An error occurred while reading the input file: {e}")
-        sys.exit(1)
-
-
-def prettify_html(input_file):
-    """Prettifies the HTML content from the input file using BeautifulSoup, preserving formatting and structure."""
-    try:
-        with open(input_file, encoding="utf-8") as file:
-            html_content = file.read()
-
-        # Parse HTML content using BeautifulSoup
-        soup = BeautifulSoup(html_content, "html.parser")
-
-        # Prettify the HTML content for formatting
-        prettified_html = soup.prettify()
-
-        # Save the prettified HTML content to a new file
-        with open(input_file, "w", encoding="utf-8") as file:
-            file.write(prettified_html)
-
-        return prettified_html
-
-    except Exception as e:
-        logger.debug(f"ERROR: An error occurred while processing the input HTML: {e}")
-        sys.exit(1)
-
-
-def modify_html_content_patterns():
-    """Processes the input HTML file, identifies specific patterns, and replaces them with new content."""
-    try:
-        # Prettify the HTML content and get the prettified HTML
-        prettified_html = prettify_html(GX_DATA_DOCS_HTML_FILE)
-
-        # -------------------------------------
-        # String pattern declarations
-        # -------------------------------------
-        # HTML code pattern to find
-        html_pattern = r"</script>\s*</div>\s*</div>\s*</div>\s*</div>\s*</div>\s*</div>\s*</div>\s*</div>\s*</div>\s*<footer>\s*<p>\s*Stay current on everything GX with our newsletter"  # noqa
-        # JavaScript code pattern to find
-        js_pattern = r'\$\(document\)\.ready\(function\(\)\s*\{\s*\$\("#section-1-content-block-2-2-body-table"\)\.on\(\'click-row\.bs\.table\',\s*function\(e,\s*row,\s*\$element\)\s*\{\s*window\.location\s*=\s*\$element\.data\("href"\);\s*\}\)\s*}\s*\);\s*'  # noqa
-        # Combined JavaScript/HTML code pattern
-        combined_html_pattern = js_pattern + html_pattern
-
-        # -------------------------------------
-        # Pattern matching/check functions
-        # -------------------------------------
-        # Search for subsequent HTML content
-        html_check_match = re.search(html_pattern, prettified_html, re.DOTALL)
-        # Search for the specific JavaScript content
-        js_match = re.search(js_pattern, prettified_html, re.DOTALL)
-        # search for the above 2 variables combined
-        combined_html_pattern_match = re.search(combined_html_pattern, prettified_html, re.DOTALL)
-
-        # ----------------------------------------
-        # Error handling for pattern matching
-        # ----------------------------------------
-        if html_check_match:
-            logger.debug("SUCCESS: Subsequent HTML elements found in the file.")
-        else:
-            logger.error("ERROR: Subsequent HTML elements not found in the file.")
-            sys.exit(1)
-
-        if js_match:
-            specific_js_code = js_match.group()
-            logger.debug("SUCCESS: Specific JavaScript code found in the HTML file.")
-            logger.debug(specific_js_code)
-        else:
-            logger.error("ERROR: Specific JavaScript content not found in the HTML file.")
-            sys.exit(1)
-
-        # Check if combined pattern is true
-        if combined_html_pattern_match:
-            logger.debug("SUCCESS: Combined JavaScript and HTML patterns found in the file.")
-
-            # Read in the replacement HTML content (to replace the pattern) from a text file
-            target_html = read_target_html_from_file(os.path.join(PYTHON_SCRIPTS_DIR, "txt/target_html.txt"))
-
-            # Perform find and replace operation
-            updated_html_file = re.sub(combined_html_pattern, target_html, prettified_html, flags=re.DOTALL)
-
-            # we want to write 2 versions of the newly updated file out:
-            # index.html & index.html.j2 - as we need this for jinja-rendering in the function 'add_data_profiling_content()'
-            html_op_files = [GX_DATA_DOCS_HTML_FILE, HTML_JINJA_TEMPLATE]
-
-            for html_file in html_op_files:
-                try:
-                    # Save the modified HTML content to the input file
-                    with open(html_file, "w") as file:
-                        file.write(updated_html_file)
-
-                    # Parse the updated HTML content using BeautifulSoup for final consistent formatting
-                    prettify_html(html_file)
-                except Exception as e:
-                    logger.error(f"Error occurred while writing {html_file}: {e}")
-                    sys.exit(1)
-
-            # Output success message
-            logger.debug("SUCCESS: HTML processing and pattern replacement completed.")
-        else:
-            logger.error("ERROR: Combined JavaScript and HTML patterns not found in the file.")
-            sys.exit(1)
-
-    except Exception as e:
-        logger.error(f"ERROR: An error occurred during HTML processing and pattern replacement: {e}")
-        sys.exit(1)
+        logger.error(f"Error creating backup: {e}")
 
 
 def main():
@@ -221,19 +69,20 @@ def main():
         # Check if the index.html file exists
         if os.path.exists(GX_DATA_DOCS_HTML_FILE):
             # Step 1: Create a backup of the original index.html file
-            create_backup(GX_DATA_DOCS_HTML_FILE)
+            create_html_backup(GX_DATA_DOCS_HTML_FILE)
 
             # Step 2: Find and replace specific HTML and JavaScript patterns
-            modify_html_content_patterns()
+            modify_html_functions.modify_html_content_patterns()
 
             # Step 3: Add data profiling content using Jinja templates
             add_data_profiling_content()
 
             # Step 4: Modify the HTML file content
-            modify_html_tabs_content(GX_DATA_DOCS_HTML_FILE)
+            modify_html_functions.modify_html_tabs_content(GX_DATA_DOCS_HTML_FILE)
 
             # Step 5: Open the Great Expectations data documentation
-            context.open_data_docs()
+            context = gx.get_context()  # Create a GX context
+            context.open_data_docs()  # Open the GX 'data docs' (i.e., HTML file)
         else:
             # Log an error if the file doesn't exist
             logger.error(f"Error: File '{GX_DATA_DOCS_HTML_FILE}' not found.")
